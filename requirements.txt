@@ -1,0 +1,55 @@
+# ────────────────────────────────────────────────────────────────────────────
+# Agents on AWS — Shared Python Requirements
+#
+# ONE virtual environment for all 66 guides.
+# Create it once at the repo root:
+#
+#   bash setup-env.sh
+#
+# Then activate at the start of every terminal session:
+#   source .venv/bin/activate
+#
+# ⚠️  Version pinning policy:
+#   We use >= ranges, NOT == pins.
+#   Reason: pin conflicts are unavoidable across 66 guides with many
+#   transitive dependencies. Let pip resolve the best compatible set.
+#   Confirmed working with Python 3.10–3.15.
+# ────────────────────────────────────────────────────────────────────────────
+
+# ── Core: Agent runtime (always needed) ──────────────────────────────────────
+strands-agents>=1.57.2       # AWS open-source agent framework
+bedrock-agentcore>=1.24.0    # AgentCore SDK (Runtime, Memory, Gateway, Identity...)
+boto3>=1.38.0                # AWS SDK for Python
+
+# ── CDK: Infrastructure (guides 005+) ────────────────────────────────────────
+# Must be >=2.243.0 for aws_bedrockagentcore L1 constructs (CfnRuntime, CfnMemory, etc.)
+aws-cdk-lib>=2.243.0
+constructs>=10.0.0
+
+# ── MCP: Model Context Protocol (guides 011, 021–027, 057–058) ───────────────
+# Note: mcp version is constrained by strands-agents — let pip resolve
+mcp>=1.23.0
+
+# ── HTTP: used in Gateway OAuth2 token flow (guides 021–027) ─────────────────
+# Do NOT pin httpx — strands-agents requires >=0.28.1
+httpx>=0.28.1
+requests>=2.32.0
+
+# ── OpenTelemetry: observability guides (033–037, 061, 064) ──────────────────
+aws-opentelemetry-distro>=0.21.0
+opentelemetry-sdk>=1.30.0
+opentelemetry-api>=1.30.0
+
+# ── LangGraph: Runtime + LangGraph guide (009) ───────────────────────────────
+langgraph>=0.2.0
+langchain-aws>=0.2.0
+
+# ── CrewAI: multi-agent guide (064) ──────────────────────────────────────────
+crewai>=0.11.0
+
+# ── Playwright: browser guides (038–041) ─────────────────────────────────────
+playwright>=1.40.0
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+packaging>=23.0          # version comparisons in verify_setup.py
+python-dotenv>=1.0.0     # optional: load .env files locally
