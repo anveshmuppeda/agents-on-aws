@@ -76,6 +76,8 @@
 
 ---
 
+![Agents on AWS — 66 Hands-On Guides](./static/banners/Build%20AI%20Agents%20on%20AWS.png) 
+
 ## Table of Contents
 
 - [Release Status](#-release-status)
