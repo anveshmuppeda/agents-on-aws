@@ -1,0 +1,27 @@
+default_agent: guide_006
+agents:
+  guide_006:
+    name: guide_006
+    entrypoint: agent.py
+    platform: linux/arm64
+    container_runtime: none
+    aws:
+      execution_role: arn:aws:iam::463470985368:role/agents-on-aws-agentcore-execution-role
+      execution_role_auto_create: false
+      account: '463470985368'
+      region: us-east-1
+      ecr_repository: 463470985368.dkr.ecr.us-east-1.amazonaws.com/cdk-hnb659fds-container-assets-463470985368-us-east-1
+      ecr_auto_create: false
+      network_configuration:
+        network_mode: PUBLIC
+      protocol_configuration:
+        server_protocol: HTTP
+      observability:
+        enabled: true
+    bedrock_agentcore:
+      agent_id: g006_agent_on_agentcore_runtime-4yPz84GmZF
+      agent_arn: arn:aws:bedrock-agentcore:us-east-1:463470985368:runtime/g006_agent_on_agentcore_runtime-4yPz84GmZF
+      agent_session_id: null
+    authorizer_configuration: null
+    request_header_configuration: null
+    oauth_configuration: null
