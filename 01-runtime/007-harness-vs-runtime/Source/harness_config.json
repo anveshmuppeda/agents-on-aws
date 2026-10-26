@@ -1,0 +1,46 @@
+{
+  "name": "guide-014-harness",
+  "description": "Travel assistant harness — Guide 014",
+  "model": {
+    "modelId": "us.amazon.nova-pro-v1:0",
+    "provider": "bedrock"
+  },
+  "systemPrompt": "You are a helpful travel assistant. Use tools when asked about weather or time. Be concise and friendly.",
+  "tools": [
+    {
+      "type": "inline",
+      "name": "get_weather",
+      "description": "Get the current weather for a city.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "City name, e.g. 'Austin, TX' or 'London'"
+          }
+        },
+        "required": ["location"]
+      },
+      "handler": "return {'temp': '72F', 'condition': 'Sunny', 'location': input['location']}"
+    },
+    {
+      "type": "inline",
+      "name": "get_time",
+      "description": "Get the current time for a timezone.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "description": "Timezone name or city"
+          }
+        },
+        "required": ["timezone"]
+      },
+      "handler": "import datetime; return {'time': datetime.datetime.now().isoformat(), 'timezone': input['timezone']}"
+    }
+  ],
+  "memory": {
+    "mode": "NO_MEMORY"
+  }
+}
