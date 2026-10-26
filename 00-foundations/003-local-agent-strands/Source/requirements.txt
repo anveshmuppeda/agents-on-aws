@@ -1,0 +1,2 @@
+strands-agents>=1.57.2
+boto3>=1.38.0
