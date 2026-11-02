@@ -102,7 +102,7 @@
 
 | | Status |
 |--|---|
-| ✅ **Released** | **Guides 001–007** — tested, deployed, working |
+| ✅ **Released** | **Guides 001–011** — tested, deployed, working |
 | 🚧 **Coming Soon** | More guides across **Runtime · Memory · Gateway · Identity · Observability · Browser · Code Interpreter · Harness · Policy · Registry · Multi-Agent** |
 
 ---
@@ -142,7 +142,7 @@ Each guide teaches a specific concept with real source code, CDK infrastructure,
 
 ## ⚡ Quick Start
 
-> **New here? Start with guides 001–007** — they are available now and cover everything from local agents to your first AgentCore Runtime deployment.
+> **New here? Start with guides 001–007** to get up and running, then continue with **008–011** for the Runtime deep dive.
 
 ### Step 1 — One-time setup (~10 min)
 
@@ -200,7 +200,7 @@ bash destroy.sh     # ⚠️ always run this to stop billing
 
 ## 📖 Learning Paths
 
-> Paths below use currently **released guides (001–007)**. Full paths across all modules will be available as more guides are released.
+> Paths below use currently **released guides (001–011)**. Full paths across all modules will be available as more guides are released.
 
 ### 🟢 Available Now — "Get started with AgentCore" (~2 hours)
 
@@ -208,17 +208,19 @@ bash destroy.sh     # ⚠️ always run this to stop billing
 
 Setup → local agent → understand the agent loop → first Runtime deploy → Harness vs Runtime comparison.
 
-### 🟡 Planned — "Build a complete agent" (~1 day)
-*Once guides 008–020 are released:*
-Add sessions → LangGraph → any model → MCP server → A2A → streaming → memory (STM + LTM)
+### 🟡 Available Now — "Deep dive into AgentCore Runtime" (~4 hours)
 
-### 🔴 Planned — "Production-ready system" (~1 week)
-*Once all modules are released:*
-Full sequence from foundations to capstone — every AgentCore service in one production-ready system.
+`008` → `009` → `010` → `011`
+
+Session isolation → LangGraph on Runtime → model hot-swap → MCP server with 9 tools.
+
+### 🔴 Planned — "Build a complete agent" (~1 day)
+*Once guides 012–020 are released:*
+Add streaming → async long-running tasks → persistent filesystem → memory (STM + LTM)
 
 ---
 
-## ✅ Available Guides (001–007)
+## ✅ Available Guides (001–011)
 
 > These guides are **tested, deployed, and verified** on a real AWS account.
 
@@ -232,12 +234,16 @@ Full sequence from foundations to capstone — every AgentCore service in one pr
 | 004 | [local-agent-no-framework](./00-foundations/004-local-agent-no-framework/) |
 | 005 | [agent-on-lambda](./00-foundations/005-agent-on-lambda/) |
 
-### Module 1 — AgentCore Runtime *(partial)*
+### Module 1 — AgentCore Runtime
 
-| # | Guide |
-|---|-------|
-| 006 | [agent-on-agentcore-runtime](./01-runtime/006-agent-on-agentcore-runtime/) |
-| 007 | [harness-vs-runtime](./01-runtime/007-harness-vs-runtime/) |
+| # | Guide | What you learn |
+|---|-------|---------------|
+| 006 | [agent-on-agentcore-runtime](./01-runtime/006-agent-on-agentcore-runtime/) | First Runtime deployment · microVM lifecycle · BedrockAgentCoreApp |
+| 007 | [harness-vs-runtime](./01-runtime/007-harness-vs-runtime/) | Config-only Harness vs code-based Runtime · when to use each |
+| 008 | [runtime-sessions](./01-runtime/008-runtime-sessions/) | **Session isolation** · microVM per user · ephemeral in-memory state · idle timeout |
+| 009 | [runtime-langgraph](./01-runtime/009-runtime-langgraph/) | **LangGraph on Runtime** · StateGraph · create_react_agent · framework-agnostic Runtime |
+| 010 | [runtime-any-model](./01-runtime/010-runtime-any-model/) | **Model hot-swap** · MODEL_ID env var · Nova / Claude / Titan · zero-rebuild model switch |
+| 011 | [runtime-mcp-server](./01-runtime/011-runtime-mcp-server/) | **MCP server on Runtime** · travel tools + AWS Docs · 9 tools · FastMCP · JSON-RPC |
 
 ---
 
