@@ -1,0 +1,44 @@
+[
+  {
+    "model": "Amazon Nova Pro",
+    "model_id": "us.amazon.nova-pro-v1:0",
+    "prompt": "What is the weather in London right now?",
+    "response": "The current weather in London is 61\u00b0F (16\u00b0C) with light rain, 82% humidity, and a 10 mph wind from the southwest.",
+    "latency_s": 1.59
+  },
+  {
+    "model": "Amazon Nova Pro",
+    "model_id": "us.amazon.nova-pro-v1:0",
+    "prompt": "Compare the weather in Austin and Seattle.",
+    "response": "The current weather in Austin is:\n- Temperature: 92\u00b0F / 33\u00b0C\n- Condition: Sunny\n- Humidity: 45%\n- Wind: 12 mph S\n\nThe current weather in Seattle is:\n- Temperature: 58\u00b0F / 14\u00b0C\n- Condition: Overcast\n- Humidity: 78%\n- Wind: 15 mph W\n\nIn summary, Austin is significantly warmer, sunnier, and less humid compared to Seattle. Seattle is cooler, overcast, and more humid.",
+    "latency_s": 2.17
+  },
+  {
+    "model": "Amazon Nova Lite",
+    "model_id": "us.amazon.nova-lite-v1:0",
+    "prompt": "What is the weather in London right now?",
+    "response": "The current weather in London is:\n- Temperature: 61\u00b0F / 16\u00b0C\n- Condition: Light Rain\n- Humidity: 82%\n- Wind: 10 mph SW",
+    "latency_s": 1.65
+  },
+  {
+    "model": "Amazon Nova Lite",
+    "model_id": "us.amazon.nova-lite-v1:0",
+    "prompt": "Compare the weather in Austin and Seattle.",
+    "response": "Here's the comparison of the current weather in Austin and Seattle:\n\n**Austin:**\n- Temperature: 92\u00b0F / 33\u00b0C\n- Condition: Sunny\n- Humidity: 45%\n- Wind: 12 mph S\n\n**Seattle:**\n- Temperature: 58\u00b0F / 14\u00b0C\n- Condition: Overcast\n- Humidity: 78%\n- Wind: 15 mph W\n\nAustin is much warmer and sunnier, while Seattle is cooler and overcast with higher humidity.",
+    "latency_s": 1.98
+  },
+  {
+    "model": "Amazon Nova Micro",
+    "model_id": "us.amazon.nova-micro-v1:0",
+    "prompt": "What is the weather in London right now?",
+    "response": "The current weather in London is:\n- Temperature: 61\u00b0F / 16\u00b0C\n- Condition: Light Rain\n- Humidity: 82%\n- Wind: 10 mph SW\n\nI'm here to help with any other weather queries you might have!",
+    "latency_s": 1.14
+  },
+  {
+    "model": "Amazon Nova Micro",
+    "model_id": "us.amazon.nova-micro-v1:0",
+    "prompt": "Compare the weather in Austin and Seattle.",
+    "response": "Here's a comparison of the current weather in Austin and Seattle:\n\n**Austin:**\n- Temperature: 92\u00b0F / 33\u00b0C\n- Condition: Sunny\n- Humidity: 45%\n- Wind: 12 mph S\n\n**Seattle:**\n- Temperature: 58\u00b0F / 14\u00b0C\n- Condition: Overcast\n- Humidity: 78%\n- Wind: 15 mph W\n\nHope this helps! If you need more information, just let me know.",
+    "latency_s": 1.38
+  }
+]
