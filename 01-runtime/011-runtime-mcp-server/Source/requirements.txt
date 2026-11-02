@@ -1,0 +1,9 @@
+# mcp 2.x — required by awslabs.aws-documentation-mcp-server and for MCPServer
+mcp>=2.0.0
+
+# Official AWS Documentation MCP Server from awslabs
+# Provides: search_documentation, read_documentation, read_sections, search_table, recommend
+awslabs.aws-documentation-mcp-server>=1.2.4
+
+boto3>=1.38.0
+anyio>=4.0.0
