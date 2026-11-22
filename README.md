@@ -112,12 +112,12 @@
 
 ## 💡 Why This Repo?
 
-✅ **Progressive Learning Path** — Start with local agents, then follow the released Runtime guides; additional production topics are on the roadmap
-✅ **Roadmap Coverage** — Runtime · Memory · Gateway · Identity · Browser · Code Interpreter · Harness · Observability · Policy · Registry · Payments
-✅ **Runnable, Not Theoretical** — AWS deployment guides provision real infrastructure with CDK Python; local and documentation guides explain their own run steps
-✅ **Security First** — Dedicated identity, policy, and credential management guides — not an afterthought  
-✅ **Cost Transparent** — Every guide shows its cost estimate before you deploy a single resource  
-✅ **Extensible Examples** — Released framework examples include Strands and LangGraph; the roadmap covers additional frameworks and model providers
+- ✅ **Progressive Learning Path** — Start with local agents, then follow the released Runtime guides; additional production topics are on the roadmap.
+- ✅ **Roadmap Coverage** — Runtime · Memory · Gateway · Identity · Browser · Code Interpreter · Harness · Observability · Policy · Registry · Payments.
+- ✅ **Runnable, Not Theoretical** — AWS deployment guides provision real infrastructure with CDK Python; local and documentation guides explain their own run steps.
+- ✅ **Security First** — Dedicated identity, policy, and credential management guides — not an afterthought.
+- ✅ **Cost Transparent** — Every guide shows its cost estimate before you deploy a single resource.
+- ✅ **Extensible Examples** — Released framework examples include Strands and LangGraph; the roadmap covers additional frameworks and model providers.
 
 ---
 
@@ -435,9 +435,9 @@ MIT — see [LICENSE](./LICENSE)
 
 ---
 
-## ⭐ Stargazers over time
+## ⭐ Stargazers
 
-[![Stargazers over time](https://starchart.cc/anveshmuppeda/agents-on-aws.svg?variant=adaptive)](https://starchart.cc/anveshmuppeda/agents-on-aws)
+[View this repository's stargazers on GitHub](https://github.com/anveshmuppeda/agents-on-aws/stargazers).
 
 ---
 
