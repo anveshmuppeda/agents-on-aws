@@ -258,7 +258,7 @@ Add streaming → async long-running tasks → persistent filesystem → memory 
 
 ### To add a guide to the Available section
 
-Move the guide's row in `README.md` from `## 🚧 Coming Soon` up to `## ✅ Available Guides`, and update the status in [`docs/GUIDES.md`](./docs/GUIDES.md). That's the only change needed.
+Move the guide's row in `README.md` from `## 🚧 Coming Soon` up to `## ✅ Available Guides`, update the release status in this README, and add the guide to the applicable module index. Verify every new guide link before submitting the change.
 
 ---
 
