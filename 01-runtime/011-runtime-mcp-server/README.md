@@ -2,18 +2,17 @@
 
 ## What
 
-Deploy a **Model Context Protocol (MCP) server** to AgentCore Runtime. The server exposes Python tool functions that any agent can discover and call, without embedding the tools directly in the agent.
+Deploy a **Model Context Protocol (MCP) server** to AgentCore Runtime. The server combines four travel tools with five AWS documentation tools that MCP clients can discover and call.
 
 ## Why
 
 MCP (Model Context Protocol) is the open standard for connecting agents to tools. Instead of every agent carrying its own tools, you deploy tool servers that **any agent can connect to**. This is composability:
 
 ```
-Agent A ─────────►  Travel Tools MCP Server  ◄─────── Agent B
+MCP Client ──────►  Travel + AWS Docs MCP Server
                     (on AgentCore Runtime)
-                    ├── get_weather()
-                    ├── get_current_time()
-                    └── convert_currency()
+                    ├── Travel tools (mock data)
+                    └── AWS documentation tools (live docs)
 ```
 
 Benefits:
@@ -29,15 +28,13 @@ Benefits:
 ```mermaid
 flowchart LR
     subgraph SERVER["MCP Server  -  on AgentCore Runtime"]
-        MCP["FastMCP
+        MCP["MCPServer (mcp 2.x)
 port 8000/mcp"]
-        T1["@mcp.tool()
-get_weather()"]
-        T2["@mcp.tool()
-get_current_time()"]
-        T3["@mcp.tool()
-convert_currency()"]
-        MCP --> T1 & T2 & T3
+        TRAVEL["4 travel tools
+weather · time · currency · server info"]
+        DOCS["5 AWS documentation tools
+search · read · sections · tables · recommend"]
+        MCP --> TRAVEL & DOCS
     end
     CLIENT["Any MCP Client
 Agent / Inspector"] -- "streamable-HTTP
@@ -56,7 +53,7 @@ sequenceDiagram
     S -->> C  : capabilities
 
     C  ->> S  : tools/list
-    S -->> C  : [get_weather, get_current_time, convert_currency]
+    S -->> C  : 4 travel tools + 5 AWS documentation tools
 
     C  ->> S  : tools/call get_weather {"location":"Tokyo"}
     S -->> C  : "79°F, Clear, humidity 55%"
@@ -74,7 +71,7 @@ mindmap
 MCP Server
 on Runtime))
     MCP Server
-      FastMCP library
+      MCPServer (mcp 2.x)
       @mcp.tool decorator
       streamable-HTTP
       Port 8000 not 8080
@@ -82,13 +79,16 @@ on Runtime))
       get_weather
       get_current_time
       convert_currency
+      get_server_info
+      AWS documentation tools (5)
     vs Agent Guides
       No LLM here
       Pure tool server
       Path /mcp not /invocations
     Testing
       test_mcp_client.py
-      npx @mcp/inspector
+      npx @modelcontextprotocol/inspector
+      invoke.sh tests deployed server
 ```
 
 ---
@@ -130,9 +130,13 @@ bash deploy.sh
 
 This deploys the MCP server as a Runtime agent with the `MCP` protocol.
 
-### 4. Connect from another agent
+### 4. Test the deployed MCP server
 
-See `Source/consumer_agent.py` for how a Strands agent connects to the deployed MCP server.
+```bash
+bash invoke.sh
+```
+
+The script lists all nine tools and calls travel and AWS documentation tools through the AgentCore Runtime endpoint. The local MCP client example is in [`Source/test_mcp_client.py`](./Source/test_mcp_client.py).
 
 
 ## Cost Estimate
@@ -152,8 +156,8 @@ bash destroy.sh
 
 - AgentCore Runtime hosts MCP servers, not just agents
 - MCP servers use port 8000 and path `/mcp` (not 8080/invocations)
-- `FastMCP` + `@mcp.tool()` is the server-side pattern
-- `MCPClient` + `list_tools_sync()` is the consumer pattern
+- `MCPServer` from `mcp` 2.x + `@mcp.tool()` is the server-side pattern
+- `ClientSession` + `streamablehttp_client` is the local MCP client pattern
 - MCP enables tool reuse across multiple agents
 
 ## Next Steps
