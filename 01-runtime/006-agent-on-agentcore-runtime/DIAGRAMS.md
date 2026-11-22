@@ -386,7 +386,7 @@ mindmap
 
 ---
 
-## Recommended Combination (adopted across all 66 guides)
+## Recommended Combination (used by the released Runtime guides)
 
 1. **Option 1A `flowchart LR`** — Architecture section, shows the deployment + component view
 2. **Option 1B `sequenceDiagram`** — Invocation Flow section, shows what happens at runtime

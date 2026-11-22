@@ -14,7 +14,6 @@
 set -euo pipefail
 
 export JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1
-export AWS_PROFILE="${AWS_PROFILE:-anvesh-aws-profile}"
 export AWS_DEFAULT_REGION="us-east-1"
 
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -39,9 +38,9 @@ echo "╚═══════════════════════�
 echo ""
 
 python3 << 'PYEOF'
-import boto3, json
+import boto3, json, os
 
-AWS_PROFILE = "anvesh-aws-profile"
+AWS_PROFILE = os.environ.get("AWS_PROFILE")
 REGION      = "us-east-1"
 STACK       = "Guide011RuntimeMcpServer"
 

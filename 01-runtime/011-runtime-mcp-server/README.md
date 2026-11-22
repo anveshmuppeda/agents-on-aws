@@ -101,6 +101,11 @@ on Runtime))
 | Path: `/invocations` | Path: `/mcp` |
 | Calls Bedrock | No LLM — pure functions |
 
+## Prerequisites
+
+- Complete [`001-prerequisites`](../../00-foundations/001-prerequisites/README.md)
+- Deploy [`000-common-infra`](../../00-foundations/000-common-infra/) once before deploying this guide
+
 ## Steps
 
 ### 1. Test locally
@@ -162,5 +167,5 @@ bash destroy.sh
 
 ## Next Steps
 
-- [`012-runtime-a2a`](../../012-runtime-a2a/) — Agent-to-Agent protocol
-- [`021-gateway-lambda-tool`](../../021-gateway-lambda-tool/) — Expose tools via AgentCore Gateway
+- Planned: **012 — Runtime A2A** — Agent-to-Agent protocol
+- Planned: **021 — Gateway Lambda Tool** — Expose tools via AgentCore Gateway

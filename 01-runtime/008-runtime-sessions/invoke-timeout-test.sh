@@ -13,8 +13,6 @@
 set -euo pipefail
 
 export JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1
-export AWS_PROFILE="${AWS_PROFILE:-anvesh-aws-profile}"
-
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 while [ "$REPO_ROOT" != "/" ] && [ ! -f "$REPO_ROOT/.venv/bin/activate" ]; do
   REPO_ROOT="$(dirname "$REPO_ROOT")"

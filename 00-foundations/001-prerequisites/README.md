@@ -171,7 +171,7 @@ docker ps   # should not error
 
 ## 8. Python Virtual Environment (shared across all guides)
 
-All 66 guides use **one shared virtual environment** at the repo root. Create it once — that's it.
+The guides use **one shared virtual environment** at the repo root. Create it once, then activate it when working with the repo.
 
 ```bash
 # From the repo root (aws-bedrock-agentcore/)
@@ -240,7 +240,7 @@ You should see all green checkmarks.
 
 ---
 
-## 10. Region Note
+## 11. Region Note
 
 All guides use **`us-east-1`** as the default region. Check [AgentCore regional availability](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-regions.html) before using another region.
 

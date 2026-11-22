@@ -1,8 +1,8 @@
 # 000 — Common Infrastructure
 
-**Deploy this ONCE before running any other guide.**
+**Deploy this once before running an AWS deployment guide that uses the shared roles.**
 
-This stack creates shared IAM roles and SSM parameters used by all 66 guides. Without it, each guide would create its own duplicate roles — adding 2–3 minutes to every `bash deploy.sh` and leaving orphaned IAM resources everywhere.
+This stack creates shared IAM roles and SSM parameters for guides that opt into the common infrastructure helpers. The released AWS deployment guides use shared roles where applicable; additional roles are reserved for planned guides.
 
 ---
 
@@ -12,22 +12,24 @@ This stack creates shared IAM roles and SSM parameters used by all 66 guides. Wi
 
 | Role Name | Principal | Used By |
 |---|---|---|
-| `agents-on-aws-agentcore-execution-role` | `bedrock-agentcore.amazonaws.com` | All Runtime agents (guides 006–066) |
-| `agents-on-aws-lambda-execution-role` | `lambda.amazonaws.com` | Lambda guides (005, 021–027) |
-| `agents-on-aws-gateway-execution-role` | `bedrock-agentcore.amazonaws.com` | Gateway resources (021–027) |
-| `agents-on-aws-browser-execution-role` | `bedrock-agentcore.amazonaws.com` | Browser guides (037–041) |
-| `agents-on-aws-code-interpreter-role` | `bedrock-agentcore.amazonaws.com` | Code Interpreter guides (042–045) |
+| `agents-on-aws-agentcore-execution-role` | `bedrock-agentcore.amazonaws.com` | Released Runtime guides (006–011) and planned Runtime guides |
+| `agents-on-aws-lambda-execution-role` | `lambda.amazonaws.com` | Guide 005 and planned Lambda-backed guides |
+| `agents-on-aws-gateway-execution-role` | `bedrock-agentcore.amazonaws.com` | Planned Gateway guides |
+| `agents-on-aws-browser-execution-role` | `bedrock-agentcore.amazonaws.com` | Planned Browser guides |
+| `agents-on-aws-code-interpreter-role` | `bedrock-agentcore.amazonaws.com` | Planned Code Interpreter guides |
 
-> ⚠️ **Broad permissions by design.** This is a learning repo. All roles use broad permissions (`bedrock:*`, `bedrock-agentcore:*`) so you can focus on learning AgentCore features, not debugging IAM. In production, scope down to least-privilege.
+> ⚠️ **Broad permissions by design.** This is a learning repo. The shared roles grant broad permissions for their intended services (including `bedrock-agentcore:*` on the Runtime role) so you can focus on learning AgentCore features, not debugging IAM. In production, scope permissions down to least privilege.
 
 ### SSM Parameters
 
-All guides read shared config via SSM at deploy time instead of hardcoding:
+Guides that use the shared roles read their configuration from SSM at deploy time:
 
 | Parameter | Value |
 |---|---|
 | `/agents-on-aws/agentcore-role-arn` | AgentCore execution role ARN |
+| `/agents-on-aws/agentcore-role-name` | AgentCore execution role name |
 | `/agents-on-aws/lambda-role-arn` | Lambda execution role ARN |
+| `/agents-on-aws/lambda-role-name` | Lambda execution role name |
 | `/agents-on-aws/gateway-role-arn` | Gateway execution role ARN |
 | `/agents-on-aws/browser-role-arn` | Browser execution role ARN |
 | `/agents-on-aws/code-interpreter-role-arn` | Code Interpreter role ARN |
@@ -56,7 +58,7 @@ flowchart LR
         CW["CloudWatch\nLog Group"]
     end
 
-    GUIDES["All 66 Guide Stacks\n(read via SSM at deploy time)"] -- "ssm.StringParameter\n.value_for_string_parameter()" --> SSM
+    GUIDES["Guide stacks that opt in\n(read via SSM at deploy time)"] -- "ssm.StringParameter\n.value_for_string_parameter()" --> SSM
     SSM --> R1 & R2 & R3
 
     style COMMON fill:#f0fdf4,stroke:#16a34a
@@ -72,10 +74,10 @@ sequenceDiagram
     participant SSM as AWS SSM
     participant CF  as CloudFormation
 
-    note over Dev: Run ONCE — before any guide
+    note over Dev: Run once — before AWS deployment guides that use shared roles
     Dev ->> CDK : bash deploy.sh (000-common-infra)
     CDK ->> CF  : create AgentsOnAwsCommonInfra stack
-    CF  -->> CDK : 5 IAM roles + 7 SSM params + log group
+    CF  -->> CDK : 5 IAM roles + 9 SSM params + log group
     CDK -->> Dev : outputs: role ARNs
 
     note over Dev: Per guide (e.g. 006-agent-on-agentcore-runtime)
@@ -106,7 +108,7 @@ mindmap
       Faster guide deploys
       Clean teardown
     Used By
-      All 66 guides
+      Current and planned guides
       Via common.py helper
 ```
 
@@ -138,7 +140,7 @@ aws ssm get-parameters-by-path \
 
 ### How guides use the shared roles
 
-In every guide's `Infra/stacks/main_stack.py`:
+In a guide that opts into the shared helpers, its `Infra/stacks/main_stack.py` can use:
 
 ```python
 import sys, os
@@ -184,7 +186,7 @@ bash destroy.sh    # prompts for 'yes' — will fail if guides are still deploye
 
 ## Key Takeaways
 
-- Deploy once, reuse across all 66 guides — no duplicate IAM roles
+- Deploy once and reuse shared roles across guides that use the common helpers
 - Guides read role ARNs via SSM at CDK synthesis time (`value_for_string_parameter`)
 - `common.py` provides `get_agentcore_role()`, `PLATFORM`, and `guide_log_group()` helpers
 - `PLATFORM = LINUX_ARM64` matches AgentCore Runtime and Apple Silicon Macs

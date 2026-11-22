@@ -1,6 +1,6 @@
 # 002 — Project Template
 
-This guide defines the **standard structure** every guide in this repo follows. Use it as a reference when contributing a new guide or adapting code to your own project.
+This guide defines the **default structure for deployable guides** in this repo. Guide types differ: use only the files and workflow needed for the feature, and follow the protocol-specific notes below. Use this as a reference when contributing a guide or adapting code to your own project.
 
 ---
 
@@ -36,7 +36,7 @@ NNN-guide-name/
 
 ## Shell Scripts
 
-Every guide uses plain shell scripts — no Make required:
+Deployable guides use plain shell scripts where applicable — no Make required:
 
 | Script | Command | Description |
 |--------|---------|-------------|
@@ -57,11 +57,13 @@ pip3 install -r Infra/requirements.txt    # CDK deps
 rm -rf Infra/cdk.out __pycache__ .pytest_cache
 ```
 
+Runtime guide `invoke.sh` scripts may reuse the repository-level [`scripts/invoke_runtime.py`](../../scripts/invoke_runtime.py) helper for CloudFormation output lookup and boto3 invocation.
+
 ---
 
-## CDK Stack Pattern
+## CDK Stack Pattern (for CDK-backed deployment guides)
 
-All infrastructure stacks follow this pattern:
+CDK-backed guides typically follow this pattern; local-only and CLI-managed guides may not have a CDK stack:
 
 ```python
 # Infra/stacks/main_stack.py
@@ -100,9 +102,9 @@ app.synth()
 
 ---
 
-## Agent Entry Point Pattern
+## AgentCore Runtime Agent Entry Point Pattern
 
-All Runtime agents wrap with `BedrockAgentCoreApp`:
+Runtime guides that host an agent typically wrap it with `BedrockAgentCoreApp`. This pattern does not apply to MCP servers, Lambda handlers, Harness configuration, or local-only guides:
 
 ```python
 # Source/app/agent.py
@@ -134,7 +136,7 @@ if __name__ == "__main__":
 
 ## README Template
 
-Each guide's README follows this structure:
+Deployable guide READMEs should explain the guide-specific workflow. Use this structure as a starting point and omit sections that do not apply:
 
 ```markdown
 # NNN — Guide Title
@@ -151,7 +153,7 @@ Why this feature matters and when you'd use it.
 
 ```mermaid
 flowchart LR
-    subgraph EACH["Every Guide"]
+    subgraph EACH["Typical Runtime Agent Guide"]
         direction TB
         SH["deploy.sh  invoke.sh
 dev.sh  destroy.sh"]
@@ -172,7 +174,7 @@ Cost · Cleanup"]
 ```mermaid
 sequenceDiagram
     participant Dev
-    note over Dev: Standard workflow  -  same in every guide
+    note over Dev: Common Runtime-agent workflow  -  adapt for each guide type
     Dev->>Dev: bash dev.sh         (local hot-reload :8080)
     Dev->>Dev: bash invoke-dev.sh  (test locally)
     Dev->>Dev: bash deploy.sh      (CDK -> ECR -> CfnRuntime)
@@ -209,7 +211,7 @@ Template))
 
 ---
 ## Prerequisites
-Any guide-specific requirements beyond 002-prerequisites.
+Any guide-specific requirements beyond [`001-prerequisites`](../001-prerequisites/).
 
 ## Steps
 ### 1. ...
@@ -242,3 +244,12 @@ Links to the next guide(s).
 ## No Resources Deployed
 
 This guide is documentation-only. Nothing to deploy or destroy.
+
+## Guide-Type Variations
+
+- **Local-only guides** may omit CDK infrastructure and deploy/destroy scripts.
+- **Lambda guides** use a Lambda handler and the infrastructure required for Lambda; they do not use `BedrockAgentCoreApp`.
+- **AgentCore Runtime agent guides** typically use `BedrockAgentCoreApp` and the `/invocations` endpoint on port 8080.
+- **MCP Runtime guides** use an MCP server entry point and the MCP protocol endpoint (for this repo's MCP guide, port 8000 and `/mcp`).
+- **Harness guides** may use configuration and AgentCore CLI commands rather than a Docker image or CDK stack.
+- **Prerequisite and template guides** may be documentation or setup-script only.

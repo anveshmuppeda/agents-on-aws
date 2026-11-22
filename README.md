@@ -87,10 +87,10 @@
 - [What is This?](#-what-is-this)
 - [Quick Start](#-quick-start)
 - [Learning Paths](#-learning-paths)
-- [Available Guides](#-available-guides-001007)
+- [Available Guides and Shared Infrastructure](#-available-guides-and-shared-infrastructure-000011)
 - [Coming Soon](#-coming-soon--50-more-guides)
 - [Tech Stack](#-tech-stack)
-- [Every Guide Has](#-every-guide-has)
+- [Typical Runtime Agent Structure](#-typical-agentcore-runtime-agent-structure)
 - [Cost](#-cost)
 - [Contributing](#-contributing)
 - [Contributors](#-contributors)
@@ -104,29 +104,30 @@
 
 | | Status |
 |--|---|
-| ✅ **Released** | **Guides 001–011** — tested, deployed, working |
+| ✅ **Released** | **Guides 001–011** — available and verified; AWS deployment guides have been deployed and tested |
+| 🧰 **Shared infrastructure** | **Guide 000** — common roles and parameters required by deployment guides that opt in |
 | 🚧 **Coming Soon** | More guides across **Runtime · Memory · Gateway · Identity · Observability · Browser · Code Interpreter · Harness · Policy · Registry · Multi-Agent** |
 
 ---
 
 ## 💡 Why This Repo?
 
-✅ **End-to-End Coverage** — From your first local agent to a full production multi-agent system, nothing is skipped  
-✅ **Every AgentCore Service** — Runtime · Memory · Gateway · Identity · Browser · Code Interpreter · Harness · Observability · Policy · Registry · Payments  
-✅ **Runnable, Not Theoretical** — Every guide deploys real AWS infrastructure with CDK Python; `bash deploy.sh` and it works  
+✅ **Progressive Learning Path** — Start with local agents, then follow the released Runtime guides; additional production topics are on the roadmap
+✅ **Roadmap Coverage** — Runtime · Memory · Gateway · Identity · Browser · Code Interpreter · Harness · Observability · Policy · Registry · Payments
+✅ **Runnable, Not Theoretical** — AWS deployment guides provision real infrastructure with CDK Python; local and documentation guides explain their own run steps
 ✅ **Security First** — Dedicated identity, policy, and credential management guides — not an afterthought  
 ✅ **Cost Transparent** — Every guide shows its cost estimate before you deploy a single resource  
-✅ **Zero Lock-in** — Any agent framework (Strands, LangGraph, CrewAI), any foundation model (Nova, Claude, GPT-4o)
+✅ **Extensible Examples** — Released framework examples include Strands and LangGraph; the roadmap covers additional frameworks and model providers
 
 ---
 
 ## 🤖 What is This?
 
-This repo is a **complete, hands-on guide** to building AI agents on AWS using [Amazon Bedrock AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html).
+This repo is a growing, hands-on guide to building AI agents on AWS using [Amazon Bedrock AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html).
 
-Each guide teaches a specific concept with real source code, CDK infrastructure, shell scripts, architecture diagrams (Mermaid), and a cost estimate. Deploy one or all.
+Each guide teaches a specific concept with source code and infrastructure where applicable, plus architecture diagrams and cost guidance. Follow the released guides or choose an individual topic.
 
-| AgentCore Service | What it does |
+| Topic | What the released guides and roadmap cover |
 |---|---|
 | 🚀 **Runtime** | Serverless microVM hosting — session isolation, any framework, any model |
 | 🧠 **Memory** | STM + LTM — preferences, summaries, semantic facts, cross-agent sharing |
@@ -180,7 +181,7 @@ python3 verify_setup.py
 
 > **JSII Node warning?** Cosmetic — not an error. Silence it: `export JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1`
 
-### Step 3 — Run your first agent locally (no cost)
+### Step 3 — Run your first agent locally (no infrastructure deployed)
 
 ```bash
 source .venv/bin/activate
@@ -188,15 +189,27 @@ cd 00-foundations/003-local-agent-strands
 python3 Source/app/agent.py
 ```
 
+This makes Amazon Bedrock model calls, which may incur charges; it does not deploy AWS infrastructure.
+
 ### Step 4 — Deploy to AgentCore Runtime
 
 ```bash
 source .venv/bin/activate
+
+# Deploy shared roles and parameters once before the first AWS guide
+cd 00-foundations/000-common-infra
+bash deploy.sh
+
+# Deploy and test the Runtime guide
+cd ../..
 cd 01-runtime/006-agent-on-agentcore-runtime
 bash deploy.sh      # ~5 min — Docker → ECR → CfnRuntime
 bash invoke.sh      # test your live agent
-bash destroy.sh     # ⚠️ always run this to stop billing
+bash destroy.sh     # remove this guide's deployed resources
 ```
+
+The scripts use the AWS default credential chain. To use a named profile, set it once with `export AWS_PROFILE=your-profile`.
+Runtime guide invoke scripts share [`scripts/invoke_runtime.py`](./scripts/invoke_runtime.py) to look up the stack's Runtime ARN and invoke it with boto3.
 
 ---
 
@@ -214,7 +227,7 @@ Setup → local agent → understand the agent loop → first Runtime deploy →
 
 `008` → `009` → `010` → `011`
 
-Session isolation → LangGraph on Runtime → model hot-swap → MCP server with 9 tools.
+Session isolation → LangGraph on Runtime → Bedrock model selection → MCP server with 9 tools.
 
 ### 🔴 Planned — "Build a complete agent" (~1 day)
 *Once guides 012–020 are released:*
@@ -222,19 +235,20 @@ Add streaming → async long-running tasks → persistent filesystem → memory 
 
 ---
 
-## ✅ Available Guides (001–011)
+## ✅ Available Guides and Shared Infrastructure (000–011)
 
-> These guides are **tested, deployed, and verified** on a real AWS account.
+> Guides are released and verified to the degree described in each guide. AWS deployment guides have been deployed and tested on a real AWS account.
 
 ### Module 0 — Foundations
 
-| # | Guide |
-|---|-------|
-| 001 | [prerequisites](./00-foundations/001-prerequisites/) |
-| 002 | [project-template](./00-foundations/002-project-template/) |
-| 003 | [local-agent-strands](./00-foundations/003-local-agent-strands/) |
-| 004 | [local-agent-no-framework](./00-foundations/004-local-agent-no-framework/) |
-| 005 | [agent-on-lambda](./00-foundations/005-agent-on-lambda/) |
+| # | Guide | What it provides |
+|---|-------|------------------|
+| 000 | [common-infra](./00-foundations/000-common-infra/) | Shared roles and SSM parameters used by AWS deployment guides |
+| 001 | [prerequisites](./00-foundations/001-prerequisites/) | AWS tools, credentials, model access, and setup verification |
+| 002 | [project-template](./00-foundations/002-project-template/) | Default structure and variations for new guides |
+| 003 | [local-agent-strands](./00-foundations/003-local-agent-strands/) | First Strands agent running locally |
+| 004 | [local-agent-no-framework](./00-foundations/004-local-agent-no-framework/) | Agent loop using raw boto3 |
+| 005 | [agent-on-lambda](./00-foundations/005-agent-on-lambda/) | Lambda + API Gateway agent deployment |
 
 ### Module 1 — AgentCore Runtime
 
@@ -244,8 +258,8 @@ Add streaming → async long-running tasks → persistent filesystem → memory 
 | 007 | [harness-vs-runtime](./01-runtime/007-harness-vs-runtime/) | Config-only Harness vs code-based Runtime · when to use each |
 | 008 | [runtime-sessions](./01-runtime/008-runtime-sessions/) | **Session isolation** · microVM per user · ephemeral in-memory state · idle timeout |
 | 009 | [runtime-langgraph](./01-runtime/009-runtime-langgraph/) | **LangGraph on Runtime** · StateGraph · create_react_agent · framework-agnostic Runtime |
-| 010 | [runtime-any-model](./01-runtime/010-runtime-any-model/) | **Model hot-swap** · MODEL_ID env var · Nova / Claude / Titan · zero-rebuild model switch |
-| 011 | [runtime-mcp-server](./01-runtime/011-runtime-mcp-server/) | **MCP server on Runtime** · travel tools + AWS Docs · 9 tools · FastMCP · JSON-RPC |
+| 010 | [runtime-any-model](./01-runtime/010-runtime-any-model/) | **Bedrock model selection** · MODEL_ID env var · compare Nova models |
+| 011 | [runtime-mcp-server](./01-runtime/011-runtime-mcp-server/) | **MCP server on Runtime** · travel tools + AWS Docs · 9 tools · MCPServer · JSON-RPC |
 
 ---
 
@@ -258,7 +272,7 @@ Add streaming → async long-running tasks → persistent filesystem → memory 
 
 ### To add a guide to the Available section
 
-Move the guide's row in `README.md` from `## 🚧 Coming Soon` up to `## ✅ Available Guides`, update the release status in this README, and add the guide to the applicable module index. Verify every new guide link before submitting the change.
+Move the guide's row from `## 🚧 Coming Soon` into the available-guides table, update the release status in this README, and add the guide to the applicable module index. Verify every new guide link before submitting the change.
 
 ---
 
@@ -312,30 +326,31 @@ Orchestrator + specialists + shared Memory · A2A + Registry dynamic discovery �
 
 ## 🛠 Tech Stack
 
-| Layer |
-|-------|
-| **Agent framework** |
-| **Foundation model** |
-| **Infrastructure** |
-| **AgentCore services** |
-| **Language** |
-| **Container** |
-| **Region** |
+| Layer | Used in released guides |
+|-------|--------------------------|
+| **Agent framework** | Strands Agents; LangGraph |
+| **Foundation model** | Amazon Bedrock models, including Nova; model comparison in Guide 010 |
+| **Infrastructure** | AWS CDK with Python |
+| **AgentCore services** | Runtime; MCP protocol on Runtime |
+| **Other AWS services** | Amazon Bedrock, Lambda, API Gateway, ECR, CloudWatch, IAM, SSM |
+| **Language** | Python |
+| **Container** | Docker, Linux ARM64 for Runtime deployments |
+| **Default region** | `us-east-1` |
 
 ---
 
 ---
 
-## 📐 Every Guide Has
+## 📐 Typical AgentCore Runtime Agent Structure
 
 ```
 NNN-guide-name/
 ├── README.md            ← What · Why · 3 Mermaid diagrams · Steps · Cost · Cleanup
-├── deploy.sh            ← CDK deploy (auto-activates .venv, sets AWS_PROFILE)
+├── deploy.sh            ← Deploy AWS resources where applicable
 ├── invoke.sh            ← Test the deployed agent via boto3
 ├── invoke-dev.sh        ← Test against local dev server
 ├── dev.sh               ← Local hot-reload dev server
-├── destroy.sh           ← Teardown — removes ALL AWS resources
+├── destroy.sh           ← Teardown — removes resources created by this guide
 ├── Source/
 │   ├── app/agent.py     ← Agent code (BedrockAgentCoreApp + @app.entrypoint)
 │   ├── requirements.txt
@@ -345,8 +360,10 @@ NNN-guide-name/
     ├── cdk.json
     ├── requirements.txt
     └── stacks/
-        └── main_stack.py  ← Uses shared role from 000-common-infra
+        └── main_stack.py  ← CDK resources; shared role where applicable
 ```
+
+Guide contents vary by type. Local-only, prerequisite, Harness, Lambda, and MCP guides may use a different subset or entry point; see [002-project-template](./00-foundations/002-project-template/) for the variations.
 
 ---
 
@@ -354,7 +371,7 @@ NNN-guide-name/
 
 Every guide has a **Cost Estimate** section. Most guides cost **under $0.20/day** during testing.
 
-> ⚠️ Always run `bash destroy.sh` after testing to stop billing.
+> ⚠️ Run `bash destroy.sh` after testing to remove guide resources. CDK Docker image assets may remain in the shared bootstrap ECR repository and continue to incur storage charges.
 
 | Resource |
 |----------|
@@ -376,7 +393,7 @@ Contributions welcome! Each guide follows the structure in [`002-project-templat
 1. Fork → create `feature/NNN-guide-name` branch
 2. Follow the template (README · scripts · Source/ · Infra/)
 3. `bash deploy.sh && bash invoke.sh && bash destroy.sh` must all work cleanly
-4. All infrastructure via CDK — no CLI-only guides
+4. Use CDK for infrastructure stacks; document any service-specific CLI steps
 5. Include `## Cost Estimate` in the README
 6. Open a PR
 
@@ -402,14 +419,13 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
 
 ## 🔗 Related Resources
 
-| Resource |
-|----------|
-| AgentCore Developer Guide |
-| AgentCore Pricing |
-| Strands Agents SDK |
-| AgentCore GitHub Samples (AWS) |
-| AWS CDK Python Reference |
-| My Kubernetes Repo |
+| Resource | Link |
+|----------|------|
+| AgentCore Developer Guide | [AWS documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html) |
+| AgentCore Pricing | [AWS pricing](https://aws.amazon.com/bedrock/agentcore/pricing/) |
+| Strands Agents SDK | [Documentation](https://strandsagents.com/) |
+| AgentCore GitHub Samples | [AWS samples](https://github.com/awslabs/amazon-bedrock-agentcore-samples) |
+| AWS CDK Python Reference | [API reference](https://docs.aws.amazon.com/cdk/api/v2/python/) |
 
 ---
 

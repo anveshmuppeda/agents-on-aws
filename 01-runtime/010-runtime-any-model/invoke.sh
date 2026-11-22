@@ -6,8 +6,6 @@
 set -euo pipefail
 
 export JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1
-export AWS_PROFILE="${AWS_PROFILE:-anvesh-aws-profile}"
-
 # Activate shared virtual environment
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 while [ "$REPO_ROOT" != "/" ] && [ ! -f "$REPO_ROOT/.venv/bin/activate" ]; do
@@ -22,7 +20,7 @@ PROMPT="Explain the agent loop in one sentence."
 
 echo ""
 echo "Stack:   $STACK"
-echo "Profile: $AWS_PROFILE"
+echo "Profile: ${AWS_PROFILE:-default credential chain}"
 echo "Prompt:  $PROMPT"
 echo ""
 

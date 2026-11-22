@@ -94,6 +94,8 @@ Isolation))
 ---
 ## Steps
 
+For AWS deployment, deploy [`000-common-infra`](../../00-foundations/000-common-infra/) once if it is not already deployed.
+
 ### 1. Start the dev server
 
 ```bash
@@ -124,8 +126,6 @@ This sends multiple turns to Session A and Session B in parallel and proves isol
 ### 4. Deploy to AWS
 
 ```bash
-AWS_PROFILE=anvesh-aws-profile \
-DOCKER_HOST=unix:///Users/anvesh.muppeda/.rd/docker.sock \
 bash deploy.sh
 ```
 
@@ -134,7 +134,7 @@ bash deploy.sh
 Proves that two different session IDs can never see each other's data even though they hit the same Runtime ARN.
 
 ```bash
-AWS_PROFILE=anvesh-aws-profile bash invoke.sh
+bash invoke.sh
 ```
 
 **What it does (5 calls):**
@@ -172,7 +172,7 @@ Proves that in-memory state is lost when the microVM is terminated after the idl
 **Current configuration:** `idleRuntimeSessionTimeout = 60s` (set in `Infra/stacks/main_stack.py`)
 
 ```bash
-AWS_PROFILE=anvesh-aws-profile bash invoke-timeout-test.sh
+bash invoke-timeout-test.sh
 ```
 
 **What it does:**
@@ -369,4 +369,4 @@ session-alice, Call 4 (t=1year)  → NEW microVM C     → name="Alice" is GONE 
 ## Next Steps
 
 - [`011-runtime-mcp-server`](../011-runtime-mcp-server/) — Host an MCP server on Runtime
-- [`016-memory-short-term`](../../016-memory-short-term/) — Persist context across sessions using AgentCore Memory
+- Planned: **016 — Memory Short Term** — Persist context across sessions using AgentCore Memory

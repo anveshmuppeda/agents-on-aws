@@ -1,6 +1,6 @@
 {
-  "name": "guide-014-harness",
-  "description": "Travel assistant harness — Guide 014",
+  "name": "guide-007-harness",
+  "description": "Travel assistant harness — Guide 007",
   "model": {
     "modelId": "us.amazon.nova-pro-v1:0",
     "provider": "bedrock"

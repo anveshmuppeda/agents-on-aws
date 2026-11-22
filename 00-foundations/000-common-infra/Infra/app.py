@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CDK App for 000-common-infra — deploy this ONCE before any guide."""
+"""CDK app for 000-common-infra — deploy before guides that use its shared resources."""
 
 import os
 import aws_cdk as cdk
@@ -16,7 +16,7 @@ CommonInfraStack(
     ),
     description=(
         "agents-on-aws: shared IAM roles and SSM parameters "
-        "used by all 66 guides. Deploy once, reuse everywhere."
+        "shared by guides that opt in. Deploy once, reuse where applicable."
     ),
     tags={
         "Project": "agents-on-aws",

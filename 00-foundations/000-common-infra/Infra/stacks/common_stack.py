@@ -14,11 +14,11 @@ Resources created:
     CodeInterpreterRole      — used by AgentCore Code Interpreter resources
 
   SSM Parameters (exported so guides can import at deploy time):
-    /agents-on-aws/iam/agentcore-role-arn
-    /agents-on-aws/iam/lambda-role-arn
-    /agents-on-aws/iam/gateway-role-arn
-    /agents-on-aws/iam/browser-role-arn
-    /agents-on-aws/iam/code-interpreter-role-arn
+    /agents-on-aws/agentcore-role-arn
+    /agents-on-aws/lambda-role-arn
+    /agents-on-aws/gateway-role-arn
+    /agents-on-aws/browser-role-arn
+    /agents-on-aws/code-interpreter-role-arn
     /agents-on-aws/account-id
     /agents-on-aws/region
 
@@ -26,7 +26,7 @@ Usage in a guide stack:
     from aws_cdk import aws_ssm as ssm
 
     agentcore_role_arn = ssm.StringParameter.value_for_string_parameter(
-        self, "/agents-on-aws/iam/agentcore-role-arn"
+        self, "/agents-on-aws/agentcore-role-arn"
     )
     role = iam.Role.from_role_arn(self, "AgentCoreRole", agentcore_role_arn)
 """
@@ -113,7 +113,7 @@ class CommonInfraStack(cdk.Stack):
 
         # ── 1. AgentCore Runtime Execution Role ───────────────────────────
         # Assumed by: bedrock-agentcore.amazonaws.com
-        # Used by: ALL guides that deploy to AgentCore Runtime (006–066)
+        # Used by released Runtime guides and planned Runtime guides.
         agentcore_role = iam.Role(
             self,
             "AgentCoreExecutionRole",

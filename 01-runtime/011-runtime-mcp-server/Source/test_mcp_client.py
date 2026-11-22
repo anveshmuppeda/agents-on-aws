@@ -1,5 +1,5 @@
 """
-Test client for the guide-023 MCP server.
+Test client for the Guide 011 MCP server.
 
 Run with the server started:
     Terminal 1: python3 Source/app/agent.py
@@ -16,7 +16,7 @@ MCP_URL = "http://localhost:8000/mcp"
 
 async def main():
     print("\n" + "="*60)
-    print("  Guide 023: MCP Client Test")
+    print("  Guide 011: MCP Client Test")
     print("="*60)
 
     async with streamablehttp_client(MCP_URL, timeout=30) as (read, write, _):

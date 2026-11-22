@@ -28,6 +28,8 @@ import textwrap
 import urllib.request
 import urllib.error
 
+import boto3
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ------------------------------------------------------------------
@@ -203,15 +205,15 @@ def _print_comparison_table(all_results: list[dict], prompts: list[str]) -> None
 
 def main():
     print("=" * 60)
-    print("  Guide 022 — Model Comparison Test")
+    print("  Guide 010 — Model Comparison Test")
     print("  Running same agent against 3 Bedrock models")
     print("=" * 60)
 
     # Check AWS credentials
-    if not os.environ.get("AWS_ACCESS_KEY_ID") and not os.environ.get("AWS_PROFILE"):
+    if boto3.Session().get_credentials() is None:
         print(
-            "\n⚠  No AWS credentials detected. "
-            "Set AWS_ACCESS_KEY_ID/SECRET/TOKEN or AWS_PROFILE before running.\n"
+            "\n⚠  No AWS credentials found in the boto3 credential chain. "
+            "Configure AWS credentials before running.\n"
         )
 
     all_results = []

@@ -2,9 +2,8 @@
 
 ## What
 
-Deploy a **LangGraph ReAct agent** to AgentCore Runtime and prove that Runtime is
-completely framework-agnostic — LangGraph, Strands, CrewAI all work without changing
-a single line of CDK infrastructure.
+Deploy a **LangGraph ReAct agent** to AgentCore Runtime and demonstrate how a
+different agent framework can use the same general Runtime deployment pattern.
 
 ## Why
 
@@ -13,8 +12,9 @@ Every guide in the `01-runtime` series asks the same question:
 
 Guide 009 answers: **yes — even LangGraph works.**
 
-The CDK stack (`main_stack.py`) is byte-for-byte identical to Guide 007 (Strands).
-You swap the framework inside the container. Runtime doesn't care what's inside.
+The CDK stack uses the same deployment pattern as Guide 006 (Strands), with
+guide-specific names and configuration. You swap the framework inside the
+container; Runtime does not depend on which framework runs in the image.
 
 ---
 
@@ -22,13 +22,13 @@ You swap the framework inside the container. Runtime doesn't care what's inside.
 
 LangGraph is a framework for building agents as **explicit state machines (graphs)**.
 
-| | Strands (Guide 007) | LangGraph (Guide 009) |
+| | Strands (Guide 006) | LangGraph (Guide 009) |
 |--|--------------------|-----------------------|
 | Approach | Declarative — give the LLM a list of tools, framework builds the loop | Graph-based — you define nodes, edges, and state explicitly |
 | Setup | `Agent(tools=[...])` — one line | `create_react_agent()` builds a `StateGraph` |
 | Control | Framework handles the ReAct loop | You own the graph structure |
 | Good for | Quick agents, simple tool use | Complex workflows, conditional branching, multi-step pipelines |
-| AgentCore Runtime | Supported | Supported — same CDK stack |
+| AgentCore Runtime | Supported | Supported — same deployment pattern |
 
 `create_react_agent()` is a LangGraph helper that builds this state machine automatically:
 
@@ -87,7 +87,7 @@ sequenceDiagram
     end
     LG   -->> A  : final AIMessage
     A    -->> User : {"response":"The weather in Tokyo is clear..."}
-    note over A,LG: CDK stack is identical to Guide 007 — only agent.py changes
+    note over A,LG: Same CDK deployment pattern as Guide 007; guide-specific identifiers differ
 ```
 
 ### Guide Overview
@@ -105,9 +105,9 @@ on Runtime))
     vs Strands
       Graph vs decorators
       Both on same Runtime
-      Same CDK stack
+      Same Runtime deployment pattern
     Key Insight
-      Runtime is framework-agnostic
+      Runtime does not depend on a specific agent framework
       Wrap with BedrockAgentCoreApp
       Any Python framework works
 ```
@@ -153,8 +153,10 @@ _graph = create_react_agent(
 )
 ```
 
-`_graph` is a compiled `StateGraph`. It is created **once per microVM session** — not
-re-created on every request. The graph persists in memory for the lifetime of the microVM.
+`_graph` is a compiled `StateGraph`. It is created once when the Python process starts
+and remains in memory for that process lifetime. This example does not configure a
+LangGraph checkpointer or retain message history: each invocation passes only the
+current prompt, so the agent does not remember earlier turns automatically.
 
 ### Step 3 — Wrap with BedrockAgentCoreApp
 
@@ -181,9 +183,11 @@ health checks, and AgentCore Runtime protocol. The framework inside does not mat
 
 ---
 
-## Guide 009 vs Guide 007 — the only difference
+## Guide 009 vs Guide 006 — framework comparison
 
-The entire CDK stack is unchanged. The only difference is `agent.py`:
+The agent implementation changes from Strands to LangGraph. Both guides use the
+same general shared-role and Runtime deployment pattern, with guide-specific stack
+names and configuration:
 
 ```diff
   # Framework imports
@@ -217,24 +221,25 @@ The entire CDK stack is unchanged. The only difference is `agent.py`:
 + return {"response": result["messages"][-1].content}
 ```
 
-No CDK changes. No IAM changes. No Dockerfile changes. No new infrastructure.
+No new infrastructure pattern is required; the CDK stack uses the same shared-role
+and Runtime constructs as Guide 007, with guide-specific identifiers.
 
 ---
 
 ## Steps
 
+Before deploying, deploy [`000-common-infra`](../../00-foundations/000-common-infra/) once if it is not already deployed.
+
 ### 1. Deploy
 
 ```bash
-AWS_PROFILE=anvesh-aws-profile \
-DOCKER_HOST=unix:///Users/anvesh.muppeda/.rd/docker.sock \
 bash deploy.sh
 ```
 
 ### 2. Invoke
 
 ```bash
-AWS_PROFILE=anvesh-aws-profile bash invoke.sh
+bash invoke.sh
 ```
 
 ### 3. View logs
@@ -242,7 +247,6 @@ AWS_PROFILE=anvesh-aws-profile bash invoke.sh
 ```bash
 aws logs tail /aws/agents-on-aws/009-runtime-langgraph \
   --follow \
-  --profile anvesh-aws-profile \
   --region us-east-1
 ```
 
@@ -261,7 +265,7 @@ Stack:   Guide009RuntimeLanggraph
 Session: 44bb07ad-cfa1-4fa9-98d3-7d4be0d757b2
 Prompt:  What is the weather in Tokyo?
 
-Runtime: arn:aws:bedrock-agentcore:us-east-1:463470985368:runtime/g009_runtime_langgraph-sBDnu8Dtt7
+Runtime: <Runtime ARN from your deployment>
 
 {
   "response": "The weather in Tokyo is currently clear with a temperature of 79°F (26°C) and humidity at 55%."
@@ -331,16 +335,16 @@ import-time crashes instantly without deploying to AWS.
 ## Cleanup
 
 ```bash
-AWS_PROFILE=anvesh-aws-profile bash destroy.sh
+bash destroy.sh
 ```
 
 ---
 
 ## Key Takeaways
 
-- **Runtime is framework-agnostic** — LangGraph, Strands, CrewAI all work. The CDK stack never changes.
+- **Runtime hosting is framework-independent.** The released examples demonstrate Strands and LangGraph; their CDK stacks share a pattern but retain guide-specific configuration.
 - **LangGraph builds an explicit state machine** — you own the graph; `create_react_agent()` is just a helper that wires a standard ReAct loop
-- **`_graph` is created once per microVM** — not per request. This is faster and is consistent with how AgentCore Runtime works (session = one microVM, reused across calls)
+- **`_graph` is created once per Python process** — but this example does not persist conversation history between invocations
 - **`BedrockAgentCoreApp` is always the outermost wrapper** — regardless of framework
 - **Import-time crashes show as `RuntimeClientError` with no CW logs** — always test with `python3 -c "import app.agent"` locally first
 

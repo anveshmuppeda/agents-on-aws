@@ -1,5 +1,5 @@
 #!/bin/bash
-# setup-env.sh — Create the shared Python virtual environment for all 66 guides.
+# setup-env.sh — Create the shared Python virtual environment for the guide series.
 #
 # Run ONCE from the repo root:
 #   bash setup-env.sh

@@ -38,7 +38,7 @@ Thank you for your interest in contributing! This repo is a community-driven han
 
 ## Before You Start
 
-1. **Check existing guides** — browse the [full guide list](./README.md#-all-66-guides) to avoid duplicating work
+1. **Check existing guides and planned topics** — browse the [released guides](./README.md#-available-guides-and-shared-infrastructure-000011) and [roadmap](./README.md#-coming-soon--50-more-guides) to avoid duplicating work
 2. **Check open issues** — your idea may already be tracked in [Issues](https://github.com/anveshmuppeda/agents-on-aws/issues)
 3. **Open an issue first** — for new guides, [propose the guide](https://github.com/anveshmuppeda/agents-on-aws/issues/new?template=new_guide.md) before writing code to get early feedback
 4. **Fork the repo** — work on your fork, then open a PR into `main`
@@ -51,19 +51,19 @@ New guides are the highest-value contribution. Here's exactly what a guide needs
 
 ### Guide Requirements
 
-Every guide must be:
+Every guide should be:
 
-- ✅ **Self-contained** — no dependency on another guide's deployed resources
-- ✅ **Runnable** — `bash deploy.sh` + `bash invoke.sh` + `bash destroy.sh` must all work end-to-end
-- ✅ **CDK-first** — all AWS resources created via CDK (no CLI-only deployments)
+- ✅ **Self-contained** — document dependencies on shared infrastructure such as Guide 000; avoid relying on another feature guide's deployed resources
+- ✅ **Runnable** — document and verify the end-to-end workflow that applies to this guide
+- ✅ **CDK-first** — define AWS infrastructure in CDK where supported; document service-specific CLI workflows and exceptions
 - ✅ **Cost-aware** — README includes a `## Cost Estimate` section
-- ✅ **Clean teardown** — `bash destroy.sh` removes everything; no orphaned resources
-- ✅ **Diagrammed** — README has all 3 Mermaid diagrams (flowchart + sequenceDiagram + mindmap)
-- ✅ **Documented** — README follows the [template](#readme-requirements)
+- ✅ **Clean teardown** — cleanup removes guide-owned resources and documents shared or retained resources
+- ✅ **Diagrammed** — include the architecture diagrams relevant to the guide's workflow
+- ✅ **Documented** — README follows the [template](#readme-requirements), adapting it to the guide type
 
 ### Standard Structure
 
-Every guide lives inside its module folder and follows this exact layout:
+Deployable Runtime-agent guides commonly use this layout. Other guide types should use the files they need:
 
 ```
 MM-module/NNN-guide-name/
@@ -90,9 +90,11 @@ MM-module/NNN-guide-name/
 
 See [`002-project-template`](./00-foundations/002-project-template/) for a working scaffold.
 
+Local-only, Lambda, Harness, MCP, prerequisite, and documentation-only guides may differ from this layout.
+
 ### CDK Requirements
 
-All infrastructure must be defined in CDK. We use the `aws_bedrockagentcore` L1 constructs from `aws-cdk-lib>=2.243.0`.
+Define supported AWS infrastructure in CDK. Runtime guides use the `aws_bedrockagentcore` L1 constructs from `aws-cdk-lib>=2.243.0`.
 
 **AgentCore resources available as CDK L1 constructs:**
 
@@ -115,7 +117,7 @@ All infrastructure must be defined in CDK. We use the `aws_bedrockagentcore` L1 
 
 ### README Requirements
 
-Every guide README must have all of these sections in this order:
+Deployable agent guides should use these sections as a starting point, omitting or adapting sections that do not apply:
 
 ```markdown
 # NNN — Guide Title
@@ -147,7 +149,7 @@ mindmap
 ```
 
 ## Prerequisites
-- Completed [001-prerequisites](../../00-foundations/001-prerequisites/)
+- Completed [001-prerequisites](./00-foundations/001-prerequisites/)
 - Any guide-specific requirements
 
 ## Steps
@@ -180,7 +182,7 @@ bash destroy.sh
 
 ### Shell Script Requirements
 
-All 5 scripts must be present and executable (`chmod +x`). Each script:
+For Runtime-agent guides that use the standard script workflow, include the applicable scripts and make them executable (`chmod +x`). Each provided script should:
 - Has `#!/bin/bash` shebang
 - Has `set -euo pipefail` for safe execution
 - Prints clear progress messages with `echo`

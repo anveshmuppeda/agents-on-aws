@@ -1,7 +1,7 @@
 # ────────────────────────────────────────────────────────────────────────────
 # Agents on AWS — Shared Python Requirements
 #
-# ONE virtual environment for all 66 guides.
+# ONE virtual environment for the guide series.
 # Create it once at the repo root:
 #
 #   bash setup-env.sh
@@ -11,7 +11,7 @@
 #
 # ⚠️  Version pinning policy:
 #   We use >= ranges, NOT == pins.
-#   Reason: pin conflicts are unavoidable across 66 guides with many
+#   Reason: pin conflicts are unavoidable across a broad guide series with many
 #   transitive dependencies. Let pip resolve the best compatible set.
 #   Confirmed working with Python 3.10–3.15.
 # ────────────────────────────────────────────────────────────────────────────

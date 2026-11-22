@@ -79,7 +79,7 @@ Runtime))
       bash deploy.sh
       CDK CfnRuntime
       Docker ARM64
-      ECR + IAM + CloudWatch
+      ECR + shared IAM role + CloudWatch
     Local Dev
       bash dev.sh
       Hot reload
@@ -101,6 +101,7 @@ Runtime))
 ## Prerequisites
 
 - Completed [`001-prerequisites`](../../00-foundations/001-prerequisites/README.md)
+- Deploy [`000-common-infra`](../../00-foundations/000-common-infra/) once before deploying this guide
 - Docker installed and running
 - AgentCore CLI installed: `npm install -g @aws/agentcore`
 
@@ -132,7 +133,7 @@ bash deploy.sh
 ```
 
 What this does (you can read `deploy.sh` to see each step):
-- Runs `cdk deploy` which builds the Docker image, pushes it to ECR, creates the IAM role and CloudWatch log group, and creates the AgentCore Runtime agent via `CfnRuntime`
+- Runs `cdk deploy` which builds the Docker image, pushes it to ECR, references the shared execution role from Guide 000, creates the CloudWatch log group, and creates the AgentCore Runtime agent via `CfnRuntime`
 - Prints the Runtime ARN when done
 
 ### 4. Invoke the deployed agent
@@ -211,7 +212,7 @@ if __name__ == "__main__":
 bash destroy.sh
 ```
 
-Removes the AgentCore Runtime agent, ECR repository, IAM role, and CloudWatch log group.
+Removes the AgentCore Runtime agent and this guide's CloudWatch log group. The shared IAM execution role is managed by Guide 000 and is not removed by this guide's cleanup. The Docker image asset is stored in the shared CDK bootstrap ECR repository and may remain after this stack is destroyed.
 
 ## Key Takeaways
 

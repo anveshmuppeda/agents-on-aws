@@ -1,13 +1,11 @@
 #!/bin/bash
 # deploy.sh — 000-common-infra
-# Deploy ONCE before running any guide.
-# Creates shared IAM roles and SSM parameters used by all 66 guides.
+# Deploy before running AWS guides that use the shared infrastructure.
+# Creates shared IAM roles and SSM parameters for guides that opt in.
 set -euo pipefail
 
 # Silence JSII warning about untested Node.js version — cosmetic, not an error
 export JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1
-
-export AWS_PROFILE="${AWS_PROFILE:-anvesh-aws-profile}"
 
 # Activate the shared virtual environment (repo root)
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -24,11 +22,11 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 echo ""
 echo "=== 000-common-infra: Shared Infrastructure ==="
 echo ""
-echo "This stack deploys ONCE and is used by all 66 guides."
+echo "Deploy this stack once before using guides that opt into shared infrastructure."
 echo "Estimated time: ~2 minutes"
 echo ""
 echo "Creating:"
-echo "  • AgentCoreExecutionRole  (used by all Runtime agents)"
+echo "  • AgentCoreExecutionRole  (used by Runtime guides that opt in)"
 echo "  • LambdaExecutionRole     (used by Lambda tool functions)"
 echo "  • GatewayExecutionRole    (used by Gateway resources)"
 echo "  • BrowserExecutionRole    (used by Browser resources)"

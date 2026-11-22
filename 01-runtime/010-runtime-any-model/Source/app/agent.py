@@ -129,7 +129,7 @@ def invoke(payload: dict) -> dict:
     if not prompt:
         return {"error": "Missing 'prompt' in payload"}
 
-    logger.info("[022] model=%s prompt=%s", MODEL_ID, prompt[:80])
+    logger.info("[010] model=%s prompt=%s", MODEL_ID, prompt[:80])
 
     agent = Agent(
         model=_model,

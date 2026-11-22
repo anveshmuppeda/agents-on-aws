@@ -88,6 +88,7 @@ Lambda))
 ## Prerequisites
 
 - Completed [`001-prerequisites`](../001-prerequisites/README.md)
+- Deploy [`000-common-infra`](../000-common-infra/) once before deploying AWS resources
 - Docker installed and running (Lambda uses container image)
 
 ## Steps

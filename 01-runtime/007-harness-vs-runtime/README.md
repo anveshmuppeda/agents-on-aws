@@ -116,6 +116,8 @@ agentcore harness invoke \
 
 ### Path B — Runtime (Same Agent as Container)
 
+For this path, deploy [`000-common-infra`](../../00-foundations/000-common-infra/) once if it is not already deployed.
+
 ```bash
 # Deploy the Runtime version (same as guide 006)
 bash deploy.sh
@@ -156,4 +158,4 @@ bash destroy.sh
 ## Next Steps
 
 - [`008-runtime-sessions`](../008-runtime-sessions/) — Runtime session isolation deep dive
-- [`046-harness-quickstart`](../../046-harness-quickstart/) — Harness deep dive
+- Planned: **046 — Harness Quickstart** — Harness deep dive
