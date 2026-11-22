@@ -82,7 +82,7 @@ Loop))
 ---
 ## Prerequisites
 
-- Completed [`001-prerequisites`](../../001-prerequisites/README.md)
+- Completed [`001-prerequisites`](../001-prerequisites/README.md)
 
 ## Steps
 
@@ -138,5 +138,5 @@ No AWS resources deployed.
 
 ## Next Steps
 
-- [`005-agent-on-lambda`](../../005-agent-on-lambda/) — Deploy this agent to Lambda (and see why Runtime is better)
-- [`006-agent-on-agentcore-runtime`](../../006-agent-on-agentcore-runtime/) — The right way to host an agent in AWS
+- [`005-agent-on-lambda`](../005-agent-on-lambda/) — Deploy this agent to Lambda (and see why Runtime is better)
+- [`006-agent-on-agentcore-runtime`](../../01-runtime/006-agent-on-agentcore-runtime/) — The right way to host an agent in AWS

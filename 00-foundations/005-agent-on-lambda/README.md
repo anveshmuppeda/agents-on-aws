@@ -87,7 +87,7 @@ Lambda))
 ---
 ## Prerequisites
 
-- Completed [`001-prerequisites`](../../001-prerequisites/README.md)
+- Completed [`001-prerequisites`](../001-prerequisites/README.md)
 - Docker installed and running (Lambda uses container image)
 
 ## Steps
@@ -166,4 +166,4 @@ bash destroy.sh
 
 ## Next Steps
 
-- [`006-agent-on-agentcore-runtime`](../../006-agent-on-agentcore-runtime/) — The right way to host an agent in AWS — solves all of Lambda's limitations
+- [`006-agent-on-agentcore-runtime`](../../01-runtime/006-agent-on-agentcore-runtime/) — The right way to host an agent in AWS — solves all of Lambda's limitations

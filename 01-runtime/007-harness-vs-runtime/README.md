@@ -155,5 +155,5 @@ bash destroy.sh
 
 ## Next Steps
 
-- [`008-runtime-sessions`](../../008-runtime-sessions/) — Runtime session isolation deep dive
+- [`008-runtime-sessions`](../008-runtime-sessions/) — Runtime session isolation deep dive
 - [`046-harness-quickstart`](../../046-harness-quickstart/) — Harness deep dive

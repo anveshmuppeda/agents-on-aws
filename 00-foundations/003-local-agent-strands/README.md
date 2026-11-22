@@ -86,7 +86,7 @@ Strands))
 ---
 ## Prerequisites
 
-- Completed [`001-prerequisites`](../../001-prerequisites/README.md)
+- Completed [`001-prerequisites`](../001-prerequisites/README.md)
 - No Docker, no CDK needed
 
 ## Steps
@@ -157,5 +157,5 @@ No AWS resources deployed. Nothing to clean up.
 
 ## Next Steps
 
-- [`004-local-agent-no-framework`](../../004-local-agent-no-framework/) — Build the same agent from scratch with raw boto3 to see what Strands does under the hood
-- [`006-agent-on-agentcore-runtime`](../../006-agent-on-agentcore-runtime/) — Deploy this exact agent to AgentCore Runtime
+- [`004-local-agent-no-framework`](../004-local-agent-no-framework/) — Build the same agent from scratch with raw boto3 to see what Strands does under the hood
+- [`006-agent-on-agentcore-runtime`](../../01-runtime/006-agent-on-agentcore-runtime/) — Deploy this exact agent to AgentCore Runtime

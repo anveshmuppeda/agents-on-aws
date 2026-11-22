@@ -100,7 +100,7 @@ Runtime))
 ---
 ## Prerequisites
 
-- Completed [`001-prerequisites`](../../001-prerequisites/README.md)
+- Completed [`001-prerequisites`](../../00-foundations/001-prerequisites/README.md)
 - Docker installed and running
 - AgentCore CLI installed: `npm install -g @aws/agentcore`
 
@@ -223,5 +223,5 @@ Removes the AgentCore Runtime agent, ECR repository, IAM role, and CloudWatch lo
 
 ## Next Steps
 
-- [`007-harness-vs-runtime`](../../007-harness-vs-runtime/) — Compare Harness (config-only) vs Runtime (your code)
-- [`008-runtime-sessions`](../../008-runtime-sessions/) — Deep dive into session isolation and multi-turn context
+- [`007-harness-vs-runtime`](../007-harness-vs-runtime/) — Compare Harness (config-only) vs Runtime (your code)
+- [`008-runtime-sessions`](../008-runtime-sessions/) — Deep dive into session isolation and multi-turn context

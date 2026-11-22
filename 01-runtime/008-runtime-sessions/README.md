@@ -368,5 +368,5 @@ session-alice, Call 4 (t=1year)  → NEW microVM C     → name="Alice" is GONE 
 
 ## Next Steps
 
-- [`011-runtime-mcp-server`](../../011-runtime-mcp-server/) — Host an MCP server on Runtime
+- [`011-runtime-mcp-server`](../011-runtime-mcp-server/) — Host an MCP server on Runtime
 - [`016-memory-short-term`](../../016-memory-short-term/) — Persist context across sessions using AgentCore Memory
