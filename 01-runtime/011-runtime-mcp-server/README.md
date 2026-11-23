@@ -167,5 +167,5 @@ bash destroy.sh
 
 ## Next Steps
 
-- Planned: **012 — Runtime A2A** — Agent-to-Agent protocol
+- [`012-runtime-a2a`](../012-runtime-a2a/) — discover and delegate tasks to an A2A specialist on Runtime
 - Planned: **021 — Gateway Lambda Tool** — Expose tools via AgentCore Gateway

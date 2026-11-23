@@ -87,7 +87,7 @@
 - [What is This?](#-what-is-this)
 - [Quick Start](#-quick-start)
 - [Learning Paths](#-learning-paths)
-- [Available Guides and Shared Infrastructure](#-available-guides-and-shared-infrastructure-000011)
+- [Available Guides and Shared Infrastructure](#-available-guides-and-shared-infrastructure-000012)
 - [Coming Soon](#-coming-soon--50-more-guides)
 - [Tech Stack](#-tech-stack)
 - [Typical Runtime Agent Structure](#-typical-agentcore-runtime-agent-structure)
@@ -104,7 +104,7 @@
 
 | | Status |
 |--|---|
-| ✅ **Released** | **Guides 001–011** — available and verified; AWS deployment guides have been deployed and tested |
+| ✅ **Released** | **Guides 001–012** — available and verified; AWS deployment guides have been deployed and tested |
 | 🧰 **Shared infrastructure** | **Guide 000** — common roles and parameters required by deployment guides that opt in |
 | 🚧 **Coming Soon** | More guides across **Runtime · Memory · Gateway · Identity · Observability · Browser · Code Interpreter · Harness · Policy · Registry · Multi-Agent** |
 
@@ -145,7 +145,7 @@ Each guide teaches a specific concept with source code and infrastructure where 
 
 ## ⚡ Quick Start
 
-> **New here? Start with guides 001–007** to get up and running, then continue with **008–011** for the Runtime deep dive.
+> **New here? Start with guides 001–007** to get up and running, then continue with **008–012** for the Runtime deep dive.
 
 ### Step 1 — One-time setup (~10 min)
 
@@ -215,7 +215,7 @@ Runtime guide invoke scripts share [`scripts/invoke_runtime.py`](./scripts/invok
 
 ## 📖 Learning Paths
 
-> Paths below use currently **released guides (001–011)**. Full paths across all modules will be available as more guides are released.
+> Paths below use currently **released guides (001–012)**. Full paths across all modules will be available as more guides are released.
 
 ### 🟢 Available Now — "Get started with AgentCore" (~2 hours)
 
@@ -225,17 +225,17 @@ Setup → local agent → understand the agent loop → first Runtime deploy →
 
 ### 🟡 Available Now — "Deep dive into AgentCore Runtime" (~4 hours)
 
-`008` → `009` → `010` → `011`
+`008` → `009` → `010` → `011` → `012`
 
-Session isolation → LangGraph on Runtime → Bedrock model selection → MCP server with 9 tools.
+Session isolation → LangGraph on Runtime → Bedrock model selection → MCP server with 9 tools → A2A agent delegation.
 
 ### 🔴 Planned — "Build a complete agent" (~1 day)
-*Once guides 012–020 are released:*
+*As guides 013–020 are released:*
 Add streaming → async long-running tasks → persistent filesystem → memory (STM + LTM)
 
 ---
 
-## ✅ Available Guides and Shared Infrastructure (000–011)
+## ✅ Available Guides and Shared Infrastructure (000–012)
 
 > Guides are released and verified to the degree described in each guide. AWS deployment guides have been deployed and tested on a real AWS account.
 
@@ -260,6 +260,7 @@ Add streaming → async long-running tasks → persistent filesystem → memory 
 | 009 | [runtime-langgraph](./01-runtime/009-runtime-langgraph/) | **LangGraph on Runtime** · StateGraph · create_react_agent · framework-agnostic Runtime |
 | 010 | [runtime-any-model](./01-runtime/010-runtime-any-model/) | **Bedrock model selection** · MODEL_ID env var · compare Nova models |
 | 011 | [runtime-mcp-server](./01-runtime/011-runtime-mcp-server/) | **MCP server on Runtime** · travel tools + AWS Docs · 9 tools · MCPServer · JSON-RPC |
+| 012 | [runtime-a2a](./01-runtime/012-runtime-a2a/) | **Agent-to-Agent (A2A)** · local coordinator discovers and delegates to a Runtime specialist |
 
 ---
 
@@ -279,8 +280,8 @@ Move the guide's row from `## 🚧 Coming Soon` into the available-guides table,
 Here's what's coming across every AgentCore service:
 
 ### 🚀 AgentCore Runtime — Deep Dive
-*8 more guides covering:*  
-Session isolation · LangGraph on Runtime · Swap any model (Claude / Nova / GPT-4o) · MCP servers · Agent-to-Agent (A2A) · Streaming tokens · Async long-running tasks · Persistent filesystem with EFS
+*3 more guides covering:*
+Streaming tokens · Async long-running tasks · Persistent filesystem with EFS
 
 ### 🧠 AgentCore Memory
 *5 guides covering:*  

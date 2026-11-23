@@ -14,10 +14,11 @@ The core hosting environment — serverless microVMs, session isolation, any fra
 | [009-runtime-langgraph](./009-runtime-langgraph/) | LangGraph ReAct agent on AgentCore Runtime |
 | [010-runtime-any-model](./010-runtime-any-model/) | Swap Bedrock models through an environment variable |
 | [011-runtime-mcp-server](./011-runtime-mcp-server/) | Deploy and invoke an MCP tool server on Runtime |
+| [012-runtime-a2a](./012-runtime-a2a/) | A local coordinator discovers and delegates tasks to an A2A specialist on Runtime |
 ---
 
 **Start here:** [006-agent-on-agentcore-runtime](./006-agent-on-agentcore-runtime/)
-**Guides in module:** 6
+**Guides in module:** 7
 
 ---
 

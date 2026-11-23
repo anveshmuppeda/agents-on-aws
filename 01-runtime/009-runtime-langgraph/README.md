@@ -352,3 +352,4 @@ bash destroy.sh
 
 - [`010-runtime-any-model`](../010-runtime-any-model/) — swap Bedrock for any model provider
 - [`011-runtime-mcp-server`](../011-runtime-mcp-server/) — host an MCP server on Runtime instead of an agent
+- [`012-runtime-a2a`](../012-runtime-a2a/) — discover and delegate tasks to an A2A specialist on Runtime
