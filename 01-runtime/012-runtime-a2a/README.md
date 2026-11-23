@@ -2,10 +2,10 @@
 
 ## What
 
-Deploy a **Google A2A-protocol-compliant server** to AgentCore Runtime using
-Strands. Other agents (or clients) can discover this agent's capabilities via
-its agent card and invoke it as a remote tool — without knowing the
-implementation details.
+Deploy a Strands specialist as an **A2A 0.3 server** on AgentCore Runtime, then
+use a second, local Strands coordinator agent to discover and delegate tasks to
+it. The specialist exposes an Agent Card and accepts A2A JSON-RPC messages. It
+can add numbers or summarize text using Amazon Bedrock.
 
 ## Why
 
@@ -13,10 +13,12 @@ A2A (Agent-to-Agent) is an open protocol that lets AI agents communicate with
 each other across frameworks, clouds, and vendors. When you deploy an A2A server
 to AgentCore Runtime:
 
-- Any A2A-compatible client can call it
+- A coordinator agent can discover the specialist's advertised skills and
+  delegate tasks using A2A
 - You get all AgentCore Runtime benefits: session isolation, auto-scaling,
   observability, no infrastructure management
-- Other agents can use it as a remote tool
+- The specialist Runtime is explicitly configured for the A2A protocol and its
+  required port
 
 ## Architecture
 
@@ -27,16 +29,16 @@ flowchart LR
     subgraph A2A["A2A Server  -  AgentCore Runtime"]
         CARD["Agent Card
 /.well-known/agent-card.json"]
-        EXEC["StrandsA2AExecutor
-JSON-RPC over HTTP"]
+        EXEC["AgentCore serve_a2a
+A2A JSON-RPC over HTTP"]
         AGENT["Strands Agent
 add_numbers, summarize"]
         CARD & EXEC --> AGENT
     end
-    CLIENT["👤 A2A Client
-or orchestrator"] -- "tasks/send
+    CLIENT["🧠 Local coordinator
+Strands Agent"] -- "message/send
 JSON-RPC" --> EXEC
-    CLIENT -- "GET agent-card" --> CARD
+    CLIENT -- "GetAgentCard discovery" --> CARD
     AGENT --> B["Bedrock Nova Pro"]
     style A2A fill:#fdf4ff,stroke:#a855f7
 ```
@@ -45,18 +47,18 @@ JSON-RPC" --> EXEC
 
 ```mermaid
 sequenceDiagram
-    participant Orch as Orchestrator Agent
+    participant Orch as Local Coordinator Agent
     participant S    as A2A Server (Runtime)
 
-    Orch ->> S   : GET /.well-known/agent-card.json
+    Orch ->> S   : GetAgentCard (AWS API)
     S   -->> Orch : {name, description, skills: [math, summarize]}
 
-    Orch ->> S   : tasks/send {"parts":[{"text":"Add 42 and 58"}]}
-    note over S  : StrandsA2AExecutor runs agent
+    Orch ->> S   : message/send {"parts":[{"kind":"text","text":"Add 42 and 58"}]}
+    note over S  : A2A executor runs the Strands agent
     S    ->> S   : agent("Add 42 and 58") -> add_numbers(42,58) = 100
     S   -->> Orch : {"parts":[{"text":"42 + 58 = 100"}]}
 
-    note over Orch,S: Port 9000 · path / · JSON-RPC protocol
+    note over Orch,S: Port 9000 · A2A 0.3 JSON-RPC protocol
 ```
 
 ### Guide Overview
@@ -69,7 +71,7 @@ Protocol))
     A2A Protocol
       JSON-RPC over HTTP
       Port 9000
-      tasks/send method
+      message/send method
       Agent Cards discovery
     vs MCP Guide 011
       MCP = tool server no LLM
@@ -81,24 +83,25 @@ Protocol))
       /.well-known path
     CDK
       Same CfnRuntime
-      Port 9000 config
+      A2A protocol on port 9000
 ```
 
 ---
-## A2A Protocol Flow
+## A2A 0.3 Request Flow
 
 ```
 Client                               A2A Server
   │                                      │
-  │── GET /.well-known/agent-card.json ──►│  (discover capabilities)
+  │── GetAgentCard (AgentCore API) ───────►│  (discover capabilities)
   │◄── AgentCard JSON ────────────────────│
   │                                      │
-  │── POST / {"method": "tasks/send"} ───►│  (submit task)
-  │◄── {"result": {"id": "task-123"}} ───│
-  │                                      │
-  │── POST / {"method": "tasks/get"} ────►│  (poll for result)
-  │◄── {"result": {"status": "completed"}}│
+  │── POST / {"method": "message/send"} ──►│  (submit task)
+  │◄── {"result": {"status": "completed"}}│  (task and result)
 ```
+
+This guide's specialist completes the request before returning the
+`message/send` response, so the coordinator does not need to poll with
+`tasks/get`.
 
 ## Steps
 
@@ -126,8 +129,10 @@ curl http://localhost:9000/.well-known/agent-card.json | python3 -m json.tool
 
 ```bash
 # In another terminal (server must be running):
-python3 Source/test_*.py
+python3 Source/test_client.py
 ```
+
+This verifies the server's discovery endpoint and JSON-RPC protocol locally.
 
 ### 5. Deploy to AgentCore Runtime
 
@@ -135,18 +140,30 @@ python3 Source/test_*.py
 bash deploy.sh
 ```
 
-### 6. Invoke via A2A protocol in the cloud
+### 6. Invoke an A2A task through AgentCore Runtime
 
 ```bash
-bash invoke.sh
+bash invoke.sh "Add 2 and 3."
 ```
 
+This is the two-agent proof: a local Strands coordinator discovers the deployed
+specialist with AgentCore `GetAgentCard`, decides to delegate using its tool,
+then sends an A2A JSON-RPC `message/send` through the authenticated Runtime API.
+The Runtime specialist responds with a completed A2A task, which the coordinator
+uses to answer you. Only the specialist runs in AgentCore Runtime; the
+coordinator runs locally and makes its own Bedrock model call.
+
+The AWS identity used by the local coordinator needs permission to call
+`bedrock-agentcore:GetAgentCard` and `bedrock-agentcore:InvokeAgentRuntime` for
+the deployed Runtime.
 
 ## Cost Estimate
 
 **Approximate cost: ~$0.05–$0.15/day**
 
-Two Runtime agents: ~$0.0000267/session-sec EACH. A2A adds no extra cost.
+One Runtime specialist: approximately $0.0000267/session-second, plus Bedrock
+inference charges for both the local coordinator and remote specialist. A2A
+itself adds no separate charge.
 
 > For current pricing, see the [AgentCore pricing page](https://aws.amazon.com/bedrock/agentcore/pricing/) and [Bedrock pricing](https://aws.amazon.com/bedrock/pricing/). Always run `bash destroy.sh` after testing to stop billing.
 ## Cleanup
@@ -157,11 +174,16 @@ bash destroy.sh
 
 ## Agent Card (what the server advertises)
 
+This example shows the URL used by the local development server. The deployed
+coordinator discovers the card through AgentCore's `GetAgentCard` API and calls
+the Runtime through `InvokeAgentRuntime`.
+
 ```json
 {
-  "name": "guide-005-a2a-server",
+  "name": "guide-012-a2a-server",
   "description": "A2A agent with math and text tools",
-  "version": "1.0",
+  "version": "1.0.0",
+  "url": "http://localhost:9000/",
   "capabilities": {
     "streaming": false,
     "pushNotifications": false
@@ -170,12 +192,14 @@ bash destroy.sh
     {
       "id": "add_numbers",
       "name": "Add Numbers",
-      "description": "Adds two numbers and returns the sum"
+      "description": "Adds two numbers and returns their sum",
+      "tags": ["math", "arithmetic"]
     },
     {
       "id": "summarize_text",
       "name": "Summarize Text",
-      "description": "Summarizes a piece of text using an LLM"
+      "description": "Summarizes text in a requested number of sentences",
+      "tags": ["text", "summarization"]
     }
   ]
 }
@@ -183,10 +207,12 @@ bash destroy.sh
 
 ## Key Takeaways
 
-1. **A2A is framework-agnostic** — any client that speaks A2A JSON-RPC can call this.
+1. **A2A enables agent delegation** — the local coordinator discovers and delegates to a remote specialist.
 2. **Port 9000** for A2A (different from 8080 used by standard AgentCore agents).
 3. **Agent card is the contract** — clients discover capabilities without reading code.
-4. **Tools become skills** — your Strands tools are exposed as A2A skills automatically.
+4. **Advertised skills are the contract** — the specialist declares its
+   capabilities in the Agent Card; the coordinator uses those capabilities to
+   decide when to delegate.
 
 ## Next Steps
 

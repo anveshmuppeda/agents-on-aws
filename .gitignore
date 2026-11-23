@@ -222,3 +222,6 @@ __marimo__/
 
 .DS_Store
 local/
+
+# AWS CDK synthesized templates and staged assets
+cdk.out/

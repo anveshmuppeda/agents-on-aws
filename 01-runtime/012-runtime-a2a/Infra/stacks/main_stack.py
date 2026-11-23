@@ -52,6 +52,7 @@ class MainStack(cdk.Stack):
             network_configuration=agentcore.CfnRuntime.NetworkConfigurationProperty(
                 network_mode="PUBLIC",
             ),
+            protocol_configuration=agentcore.ProtocolType.A2_A.value,
             environment_variables={
                 "MODEL_ID": "us.amazon.nova-pro-v1:0",
             },

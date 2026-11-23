@@ -1,7 +1,6 @@
 #!/bin/bash
 # invoke.sh — 012-runtime-a2a
-# Invokes the deployed AgentCore Runtime agent via boto3.
-# No agentcore CLI project config required.
+# Runs a local coordinator agent that discovers and calls the deployed A2A agent.
 # Usage: bash invoke.sh
 set -euo pipefail
 
@@ -17,14 +16,15 @@ done
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 STACK="Guide012RuntimeA2A"
-PROMPT="Add 42 and 58."
+PROMPT="${1:-Add 42 and 58.}"
 
 echo ""
 echo "Stack:   $STACK"
 echo "Profile: ${AWS_PROFILE:-default credential chain}"
 echo "Prompt:  $PROMPT"
+echo "Flow:    local coordinator -> A2A Runtime specialist"
 echo ""
 
-python3 "$REPO_ROOT/scripts/invoke_runtime.py" \
-  "$STACK" \
-  "$PROMPT"
+python3 "$SCRIPT_DIR/Source/a2a_orchestrator.py" \
+  --stack "$STACK" \
+  --prompt "$PROMPT"

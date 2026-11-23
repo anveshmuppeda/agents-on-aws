@@ -2,39 +2,49 @@
 012 — AgentCore Runtime: Agent-to-Agent (A2A) Server
 ======================================================
 
-Deploys a Google A2A-protocol-compliant server to AgentCore Runtime.
-Other agents discover this agent's capabilities via the agent card endpoint
-and invoke it as a remote tool using JSON-RPC 2.0.
+Deploys an A2A 0.3 server to AgentCore Runtime using the AgentCore A2A adapter.
+Clients discover capabilities through the Agent Card and send tasks using
+JSON-RPC 2.0.
 
-Tools exposed as A2A skills:
+The Agent Card advertises these capabilities, which the Strands agent fulfills
+using its internal tools:
   - add_numbers(a, b) → arithmetic sum
   - summarize_text(text, max_sentences) → LLM-generated summary
 
 Port: 9000 (A2A convention — distinct from AgentCore's 8080)
 
 Local testing:
-    agentcore dev --port 9000
+    bash dev.sh
     curl http://localhost:9000/.well-known/agent-card.json
     python3 Source/test_client.py
 """
 
-import json
 import logging
 import os
-from typing import Any
+import threading
 
+from a2a.server.agent_execution import AgentExecutor, RequestContext
+from a2a.server.events import EventQueue
+from a2a.server.tasks import TaskUpdater
+from a2a.types import (
+    AgentCapabilities,
+    AgentCard,
+    AgentSkill,
+    Part,
+    TextPart,
+)
+from a2a.utils import new_task
 from strands import Agent, tool
 from strands.models import BedrockModel
-from bedrock_agentcore.runtime import BedrockAgentCoreApp
+from bedrock_agentcore.runtime import serve_a2a
 
 logger = logging.getLogger(__name__)
 
 MODEL_ID = os.environ.get("MODEL_ID", "us.amazon.nova-pro-v1:0")
 REGION = os.environ.get("AWS_DEFAULT_REGION", os.environ.get("AWS_REGION", "us-east-1"))
-PORT = int(os.environ.get("PORT", "9000"))
 
 # ---------------------------------------------------------------------------
-# Tools (become A2A "skills")
+# Internal tools selected by the Strands agent
 # ---------------------------------------------------------------------------
 
 
@@ -89,45 +99,34 @@ def summarize_text(text: str, max_sentences: int = 3) -> str:
 
 
 # ---------------------------------------------------------------------------
-# A2A Server definition
+# A2A Agent Card
 # ---------------------------------------------------------------------------
 
-AGENT_CARD = {
-    "name": "guide-024-a2a-server",
-    "description": "A2A-protocol agent with arithmetic and text summarization capabilities.",
-    "version": "1.0.0",
-    "url": f"http://localhost:{PORT}",
-    "capabilities": {
-        "streaming": False,
-        "pushNotifications": False,
-        "stateTransitionHistory": True,
-    },
-    "skills": [
-        {
-            "id": "add_numbers",
-            "name": "Add Numbers",
-            "description": "Adds two numbers (floats) and returns the arithmetic sum.",
-            "inputModes": ["text"],
-            "outputModes": ["text"],
-            "examples": ["Add 42 and 58", "What is 3.14 + 2.72?"],
-            "tags": ["math", "arithmetic"],
-        },
-        {
-            "id": "summarize_text",
-            "name": "Summarize Text",
-            "description": "Summarizes a piece of text using an LLM. Supports configurable sentence count.",
-            "inputModes": ["text"],
-            "outputModes": ["text"],
-            "examples": [
-                "Summarize: The quick brown fox...",
-                "Summarize this article in 2 sentences: ...",
-            ],
-            "tags": ["text", "nlp", "summarization"],
-        },
+AGENT_CARD = AgentCard(
+    name="guide-012-a2a-server",
+    description="A Strands agent that can add numbers and summarize text.",
+    url="http://localhost:9000/",
+    version="1.0.0",
+    capabilities=AgentCapabilities(streaming=False, pushNotifications=False),
+    skills=[
+        AgentSkill(
+            id="add_numbers",
+            name="Add Numbers",
+            description="Adds two numbers and returns their sum.",
+            tags=["math", "arithmetic"],
+            examples=["Add 42 and 58", "What is 3.14 + 2.72?"],
+        ),
+        AgentSkill(
+            id="summarize_text",
+            name="Summarize Text",
+            description="Summarizes text in a requested number of sentences.",
+            tags=["text", "summarization"],
+            examples=["Summarize this paragraph in two sentences."],
+        ),
     ],
-    "defaultInputModes": ["text"],
-    "defaultOutputModes": ["text"],
-}
+    defaultInputModes=["text"],
+    defaultOutputModes=["text"],
+)
 
 
 # ---------------------------------------------------------------------------
@@ -149,80 +148,59 @@ def _build_agent() -> Agent:
 
 
 # ---------------------------------------------------------------------------
-# AgentCore A2A App
-#
-# BedrockAgentCoreApp with A2A mode exposes:
-#   GET  /.well-known/agent-card.json  → returns AGENT_CARD
-#   POST /                             → handles A2A JSON-RPC requests
-#
-# The @app.entrypoint processes the task message and returns the result.
+# A2A executor
 # ---------------------------------------------------------------------------
 
-app = BedrockAgentCoreApp()  # agent_card and port removed in bedrock-agentcore 1.25+
+class StrandsA2AExecutor(AgentExecutor):
+    def __init__(self) -> None:
+        self._cancel_signals: dict[str, threading.Event] = {}
 
+    async def execute(self, context: RequestContext, event_queue: EventQueue) -> None:
+        task = context.current_task or new_task(context.message)
+        cancel_signal = threading.Event()
+        self._cancel_signals[task.id] = cancel_signal
 
-@app.entrypoint
-def invoke(payload: dict) -> dict:
-    """
-    A2A task handler.
+        if context.current_task is None:
+            await event_queue.enqueue_event(task)
 
-    The payload conforms to A2A JSON-RPC "tasks/send":
-        {
-            "jsonrpc": "2.0",
-            "id": "req-1",
-            "method": "tasks/send",
-            "params": {
-                "id": "task-abc",
-                "message": {
-                    "role": "user",
-                    "parts": [{"type": "text", "text": "Add 42 and 58"}]
-                }
-            }
-        }
+        try:
+            updater = TaskUpdater(event_queue, task.id, task.context_id)
+            user_text = context.get_user_input()
+            logger.info("A2A task received: %s", user_text[:120])
 
-    Returns A2A Task object with status and result.
-    """
-    # Extract the user message from the A2A payload
-    params = payload.get("params", payload)
-    message = params.get("message", {})
-    parts = message.get("parts", [])
+            agent = _build_agent()
+            response = await agent.invoke_async(
+                user_text,
+                cancel_signal=cancel_signal,
+            )
+            if cancel_signal.is_set():
+                return
 
-    # Collect all text parts
-    user_text = " ".join(
-        p.get("text", "") for p in parts if p.get("type") == "text"
-    ).strip()
+            await updater.add_artifact(
+                [Part(root=TextPart(text=str(response).strip()))],
+                name="result",
+            )
+            await updater.complete()
+        finally:
+            self._cancel_signals.pop(task.id, None)
 
-    if not user_text:
-        # Fallback: try direct prompt field (for dev/test convenience)
-        user_text = payload.get("prompt", "").strip()
+    async def cancel(self, context: RequestContext, event_queue: EventQueue) -> None:
+        task = context.current_task
+        if task is None:
+            raise ValueError("A2A cancellation requires an active task.")
 
-    if not user_text:
-        return {
-            "status": {"state": "failed"},
-            "error": {"code": -32600, "message": "No text found in message parts"},
-        }
+        cancel_signal = self._cancel_signals.get(task.id)
+        if cancel_signal is None:
+            raise ValueError(f"No active execution found for A2A task {task.id!r}.")
 
-    logger.info("[024-a2a] task text=%s", user_text[:120])
-
-    agent = _build_agent()
-    response = agent(user_text)
-    response_text = str(response).strip()
-
-    # Return A2A Task result format
-    return {
-        "status": {"state": "completed"},
-        "artifacts": [
-            {
-                "name": "result",
-                "parts": [{"type": "text", "text": response_text}],
-            }
-        ],
-    }
+        cancel_signal.set()
+        updater = TaskUpdater(event_queue, task.id, task.context_id)
+        await updater.cancel()
 
 
 # ---------------------------------------------------------------------------
-# Local entry point
+# A2A server entry point
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    app.run()
+    serve_a2a(StrandsA2AExecutor(), AGENT_CARD)

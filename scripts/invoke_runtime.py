@@ -4,6 +4,7 @@
 import argparse
 import json
 import os
+import uuid
 
 
 def main() -> None:
@@ -14,6 +15,11 @@ def main() -> None:
         "--session",
         dest="session_id",
         help="Optional Runtime session ID to reuse",
+    )
+    parser.add_argument(
+        "--a2a",
+        action="store_true",
+        help="Send the prompt as an A2A 0.3 message/send JSON-RPC request",
     )
     args = parser.parse_args()
 
@@ -38,9 +44,26 @@ def main() -> None:
         )
 
     client = session.client("bedrock-agentcore")
+    if args.a2a:
+        payload = {
+            "jsonrpc": "2.0",
+            "id": f"req-{uuid.uuid4().hex}",
+            "method": "message/send",
+            "params": {
+                "message": {
+                    "kind": "message",
+                    "messageId": f"msg-{uuid.uuid4().hex}",
+                    "role": "user",
+                    "parts": [{"kind": "text", "text": args.prompt}],
+                },
+            },
+        }
+    else:
+        payload = {"prompt": args.prompt}
+
     request = {
         "agentRuntimeArn": runtime_arn,
-        "payload": json.dumps({"prompt": args.prompt}).encode("utf-8"),
+        "payload": json.dumps(payload).encode("utf-8"),
         "contentType": "application/json",
         "accept": "application/json",
     }

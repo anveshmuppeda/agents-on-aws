@@ -1,19 +1,11 @@
 #!/bin/bash
 # invoke-dev.sh — 012-runtime-a2a
-# Send a prompt to the running local dev server.
+# Test the local A2A server.
 # Start the dev server first: bash dev.sh
 # Usage: bash invoke-dev.sh
 set -euo pipefail
 
 export JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1
 
-PROMPT="Add 42 and 58."
-
-echo "Sending to local dev server..."
-echo "Prompt: $PROMPT"
-echo "(Make sure bash dev.sh is running in another terminal)"
-echo ""
-
-agentcore dev \
-  --json \
-  "$PROMPT"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+python3 "$SCRIPT_DIR/Source/test_client.py" --host localhost --port 9000
